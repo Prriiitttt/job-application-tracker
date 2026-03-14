@@ -1,0 +1,73 @@
+.home {
+  padding: 12px;
+}
+
+.home h1 {
+  font-weight: 600;
+}
+
+.tiles {
+  display: grid;
+  grid-template-columns: 200px 150px 150px 150px;
+  grid-template-rows: repeat(4, 1fr);
+  gap: 28px;
+  height: 400px;
+  width: 600px;
+}
+
+.tile {
+  background-color: #141c2e;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.total-Applications {
+  grid-column: 1 / 3;
+  grid-row: 1 / 5;
+  border-bottom: 4px solid #00d4ff
+}
+
+.total-Applications > .tile-count {
+  font-size: 48px;
+  color: #00d4ff
+}
+
+.applied {
+  grid-column: 3 / 4;
+  grid-row: 1 / 4;
+  border-bottom: 4px solid #4f8ef7;
+}
+
+.applied > .tile-count {
+  font-size: 36px;
+  color: #4f8ef7;
+}
+
+.interviews {
+  grid-column: 4 / 5;
+  grid-row: 1 / 4;
+  border-bottom: 4px solid #00e5a0;
+}
+
+.interviews > .tile-count {
+  font-size: 36px;
+  color: #00e5a0;
+}
+
+.rejected {
+  grid-column: 3 / 5;
+  grid-row: 4 / 5;
+  border-bottom: 4px solid #ff6b6b;
+}
+
+.rejected > .tile-count {
+  font-size: 36px;
+  color: #ff6b6b;
+}
+
+.tile-count {
+  font-weight: 600;
+}
