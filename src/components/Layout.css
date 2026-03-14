@@ -1,0 +1,37 @@
+.layout {
+  display: flex;
+}
+
+aside {
+    height: 100vh;
+}
+
+nav {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border: none;
+  background-color: #1a2134;
+  border-radius: 4px;
+  height: 45vh;
+  width: 12vw;
+  margin: 12px 12px;
+}
+
+nav > img {
+  height: 100px;
+}
+
+a > img {
+  height: 80px;
+  transition: 0.2s ease;
+}
+
+.is-active {
+  filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.35));
+  /* transform: scale(1.08); */
+}
+
+main {
+  flex: 1;
+}
