@@ -1,9 +1,11 @@
 .home {
   padding: 12px;
+  width: 80vw;
 }
 
 .home h1 {
   font-weight: 600;
+  padding: 0 8px;
 }
 
 .tiles {
@@ -27,15 +29,15 @@
 .total-Applications {
   grid-column: 1 / 3;
   grid-row: 1 / 5;
-  border-bottom: 4px solid #00d4ff
+  border-bottom: 4px solid #00d4ff;
 }
 
 .total-Applications > .tile-count {
   font-size: 48px;
-  color: #00d4ff
+  color: #00d4ff;
 }
 
-.applied {
+.applied{
   grid-column: 3 / 4;
   grid-row: 1 / 4;
   border-bottom: 4px solid #4f8ef7;
