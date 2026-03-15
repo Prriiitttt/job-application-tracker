@@ -12,8 +12,8 @@ export default function Applied() {
     notes: "",
   });
   const [applications, setApplications] = useState(() => {
-    const savedApplications = localStorage.getItem("applications")
-    return savedApplications ? JSON.parse(savedApplications) : []
+    const savedApplications = localStorage.getItem("applications");
+    return savedApplications ? JSON.parse(savedApplications) : [];
   });
 
   function handleAddBtn() {
@@ -38,9 +38,14 @@ export default function Applied() {
   }
 
   useEffect(() => {
-    localStorage.setItem("applications", JSON.stringify(applications))
-  }, [applications])
-  
+    localStorage.setItem("applications", JSON.stringify(applications));
+  }, [applications]);
+
+  function handleStatusChange(index, newStatus) {
+    const updatedApplications = [...applications]
+    updatedApplications[index].status = newStatus
+    setApplications(updatedApplications)
+  }
 
   return (
     <div className="application">
@@ -113,7 +118,38 @@ export default function Applied() {
           </form>
         </div>
       )}
-      <div className="applications-table"></div>
+      <div className="applications-table">
+        <table>
+          <thead>
+            <tr>
+              <th>Company</th>
+              <th>Role</th>
+              <th>Date</th>
+              <th>Status</th>
+              <th>Notes</th>
+            </tr>
+          </thead>
+          <tbody>
+            {applications.map((application, index) => (
+              <tr key={index}>
+                <td>{application.company}</td>
+                <td>{application.role}</td>
+                <td>{application.date}</td>
+                <td>
+                  <select name="status" id={`status-${index}`} value={application.status} 
+                    onChange={(e) => handleStatusChange(index, e.target.value)}
+                  >
+                    <option value="applied">Applied</option>
+                    <option value="rejected">Rejected</option>
+                    <option value="interview">Interview</option>
+                  </select>
+                </td>
+                <td>{application.notes}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }
