@@ -26,7 +26,7 @@ export default function Applied() {
 
   function handleSubmit(e) {
     e.preventDefault();
-    setApplications([...applications, formData]);
+    setApplications([...applications, {...formData, id: Date.now()}]);
     setFormData({
       company: "",
       role: "",
@@ -46,6 +46,12 @@ export default function Applied() {
     updatedApplications[index].status = newStatus
     setApplications(updatedApplications)
   }
+
+  function getStatusStyle(status) {
+  if (status === "Applied" || "applied")   return { background: "rgba(79,142,247,0.15)",  color: "#4f8ef7" }
+  if (status === "Interview" || "interview") return { background: "rgba(0,229,160,0.15)",   color: "#00e5a0" }
+  if (status === "Rejected" || "rejected")  return { background: "rgba(255,107,107,0.15)", color: "#ff6b6b" }
+} 
 
   return (
     <div className="application">
@@ -131,12 +137,12 @@ export default function Applied() {
           </thead>
           <tbody>
             {applications.map((application, index) => (
-              <tr key={index}>
+              <tr key={application.id}>
                 <td>{application.company}</td>
                 <td>{application.role}</td>
                 <td>{application.date}</td>
                 <td>
-                  <select name="status" id={`status-${index}`} value={application.status} 
+                  <select name="status" id={`status-${index}`} value={application.status} style={getStatusStyle(application.status)} 
                     onChange={(e) => handleStatusChange(index, e.target.value)}
                   >
                     <option value="applied">Applied</option>

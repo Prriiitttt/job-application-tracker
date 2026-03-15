@@ -26,3 +26,104 @@
     padding: 0 16px;
     cursor: pointer;
 }
+
+.application-form {
+  background-color: #141c2e;
+  border-radius: 12px;
+  padding: 24px;
+  max-width: 400px;
+  border: 1px solid rgba(79, 142, 247, 0.2);
+  margin-top: 20px;
+}
+
+.application-form form {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.application-form label {
+  color: #64748b;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+}
+
+.application-form input,
+.application-form select,
+.application-form textarea {
+  background-color: #0a0f1e;
+  color: #e2e8f0;
+  border: 1px solid rgba(79, 142, 247, 0.2);
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-family: Inter, sans-serif;
+  font-size: 14px;
+}
+
+.application-form input:focus,
+.application-form select:focus,
+.application-form textarea:focus {
+  border: 1px solid #4f8ef7;
+  box-shadow: 0 0 0 3px rgba(79, 142, 247, 0.15);
+}
+
+.application-form input[type="submit"] {
+  background-color: #4f8ef7;
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  margin-top: 8px;
+}
+
+.application-form button[type="button"] {
+  background: transparent;
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-family: Inter, sans-serif;
+  cursor: pointer;
+}
+
+.applications-table {
+  margin-top: 32px;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+thead th {
+  color: #64748b;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  padding: 12px 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  text-align: left;
+}
+
+tbody td {
+  padding: 14px 16px;
+  color: #e2e8f0;
+  font-size: 14px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+tbody tr:hover {
+  background-color: rgba(255, 255, 255, 0.03);
+}
+
+tbody select {
+  /* appearance: none; */
+  border: none;
+  border-radius: 10px;
+  padding: 4px 4px;
+  font-size: 12px;
+  font-weight: 600;
+  font-family: Inter, sans-serif;
+  cursor: pointer;
+}
