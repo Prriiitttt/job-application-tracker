@@ -15,6 +15,7 @@ export default function Applied() {
     const savedApplications = localStorage.getItem("applications");
     return savedApplications ? JSON.parse(savedApplications) : [];
   });
+  const[errors, setErrors] = useState({})
 
   function handleAddBtn() {
     setShowForm(true);
@@ -24,8 +25,25 @@ export default function Applied() {
     setShowForm(false);
   }
 
+  function validateForm() {
+    const newErrors = {}
+    if (!formData.company) newErrors.company = "Company is required"
+    if (!formData.role) newErrors.role = "Role is required"
+    if (!formData.date) newErrors.date = "Date is required"
+    return newErrors;
+  }
+
   function handleSubmit(e) {
     e.preventDefault();
+    const foundErrors = validateForm();
+
+    if (Object.keys(foundErrors).length > 0) {
+      setErrors(foundErrors)
+      return
+    }
+
+    setErrors({})
+
     setApplications([...applications, {...formData, id: Date.now()}]);
     setFormData({
       company: "",
@@ -64,37 +82,34 @@ export default function Applied() {
       {showForm && (
         <div className="application-form">
           <form onSubmit={handleSubmit}>
-            <label htmlFor="company">Company: </label>
+            <h2>Add Application Form</h2>
+            {/* <label htmlFor="company">Company: </label> */}
             <input
               type="text"
               id="company"
               name="company"
               value={formData.company}
+              placeholder="Company Name"
               onChange={(e) =>
                 setFormData({ ...formData, company: e.target.value })
               }
             />
-            <label htmlFor="role">Role:</label>
+            {errors.company && <span className="error-msg">{errors.company}</span>}
+
+            {/* <label htmlFor="role">Role:</label> */}
             <input
               type="text"
               id="role"
               name="role"
+              placeholder="Role"
               value={formData.role}
               onChange={(e) =>
                 setFormData({ ...formData, role: e.target.value })
               }
             />
-            <label htmlFor="date">Date:</label>
-            <input
-              type="date"
-              id="date"
-              name="date"
-              value={formData.date}
-              onChange={(e) =>
-                setFormData({ ...formData, date: e.target.value })
-              }
-            />
-            <label htmlFor="status">Status:</label>
+            {errors.role && <span className="error-msg">{errors.role}</span>}
+
+            <label htmlFor="status">Status</label>
             <select
               name="status"
               id="status"
@@ -107,11 +122,24 @@ export default function Applied() {
               <option value="rejected">Rejected</option>
               <option value="interview">Interview</option>
             </select>
-            <label htmlFor="notes">Notes:</label>
+            <label htmlFor="date">Date Applied</label>
+            <input
+              type="date"
+              id="date"
+              name="date"
+              value={formData.date}
+              onChange={(e) =>
+                setFormData({ ...formData, date: e.target.value })
+              }
+            />
+            {errors.date && <span className="error-msg">{errors.date}</span>}
+            
+            {/* <label htmlFor="notes">Notes:</label> */}
             <textarea
               id="notes"
               name="notes"
               cols="11"
+              placeholder="Notes"
               value={formData.notes}
               onChange={(e) =>
                 setFormData({ ...formData, notes: e.target.value })
