@@ -15,7 +15,7 @@ export default function Applied() {
     const savedApplications = localStorage.getItem("applications");
     return savedApplications ? JSON.parse(savedApplications) : [];
   });
-  const[errors, setErrors] = useState({})
+  const [errors, setErrors] = useState({});
 
   function handleAddBtn() {
     setShowForm(true);
@@ -26,10 +26,10 @@ export default function Applied() {
   }
 
   function validateForm() {
-    const newErrors = {}
-    if (!formData.company) newErrors.company = "Company is required"
-    if (!formData.role) newErrors.role = "Role is required"
-    if (!formData.date) newErrors.date = "Date is required"
+    const newErrors = {};
+    if (!formData.company) newErrors.company = "Company is required";
+    if (!formData.role) newErrors.role = "Role is required";
+    if (!formData.date) newErrors.date = "Date is required";
     return newErrors;
   }
 
@@ -38,13 +38,13 @@ export default function Applied() {
     const foundErrors = validateForm();
 
     if (Object.keys(foundErrors).length > 0) {
-      setErrors(foundErrors)
-      return
+      setErrors(foundErrors);
+      return;
     }
 
-    setErrors({})
+    setErrors({});
 
-    setApplications([...applications, {...formData, id: Date.now()}]);
+    setApplications([...applications, { ...formData, id: Date.now() }]);
     setFormData({
       company: "",
       role: "",
@@ -60,16 +60,19 @@ export default function Applied() {
   }, [applications]);
 
   function handleStatusChange(index, newStatus) {
-    const updatedApplications = [...applications]
-    updatedApplications[index].status = newStatus
-    setApplications(updatedApplications)
+    const updatedApplications = [...applications];
+    updatedApplications[index].status = newStatus;
+    setApplications(updatedApplications);
   }
 
   function getStatusStyle(status) {
-  if (status === "Applied" || "applied")   return { background: "rgba(79,142,247,0.15)",  color: "#4f8ef7" }
-  if (status === "Interview" || "interview") return { background: "rgba(0,229,160,0.15)",   color: "#00e5a0" }
-  if (status === "Rejected" || "rejected")  return { background: "rgba(255,107,107,0.15)", color: "#ff6b6b" }
-} 
+    if (status === "applied" || status === "Applied")
+      return { background: "rgba(79,142,247,0.15)", color: "#4f8ef7" };
+    if (status === "interview" || status === "Interview")
+      return { background: "rgba(0,229,160,0.15)", color: "#00e5a0" };
+    if (status === "rejected" || status === "Rejected")
+      return { background: "rgba(255,107,107,0.15)", color: "#ff6b6b" };
+  }
 
   return (
     <div className="application">
@@ -83,68 +86,79 @@ export default function Applied() {
         <div className="application-form">
           <form onSubmit={handleSubmit}>
             <h2>Add Application Form</h2>
-            {/* <label htmlFor="company">Company: </label> */}
-            <input
-              type="text"
-              id="company"
-              name="company"
-              value={formData.company}
-              placeholder="Company Name"
-              onChange={(e) =>
-                setFormData({ ...formData, company: e.target.value })
-              }
-            />
-            {errors.company && <span className="error-msg">{errors.company}</span>}
 
-            {/* <label htmlFor="role">Role:</label> */}
-            <input
-              type="text"
-              id="role"
-              name="role"
-              placeholder="Role"
-              value={formData.role}
-              onChange={(e) =>
-                setFormData({ ...formData, role: e.target.value })
-              }
-            />
-            {errors.role && <span className="error-msg">{errors.role}</span>}
+            <div className="form-field">
+              <input
+                type="text"
+                id="company"
+                name="company"
+                value={formData.company}
+                placeholder="Company Name"
+                onChange={(e) =>
+                  setFormData({ ...formData, company: e.target.value })
+                }
+              />
+              {errors.company && (
+                <span className="error-msg">{errors.company}</span>
+              )}
+            </div>
 
-            <label htmlFor="status">Status</label>
-            <select
-              name="status"
-              id="status"
-              value={formData.status}
-              onChange={(e) =>
-                setFormData({ ...formData, status: e.target.value })
-              }
-            >
-              <option value="applied">Applied</option>
-              <option value="rejected">Rejected</option>
-              <option value="interview">Interview</option>
-            </select>
-            <label htmlFor="date">Date Applied</label>
-            <input
-              type="date"
-              id="date"
-              name="date"
-              value={formData.date}
-              onChange={(e) =>
-                setFormData({ ...formData, date: e.target.value })
-              }
-            />
-            {errors.date && <span className="error-msg">{errors.date}</span>}
-            
-            {/* <label htmlFor="notes">Notes:</label> */}
-            <textarea
-              id="notes"
-              name="notes"
-              cols="11"
-              placeholder="Notes"
-              value={formData.notes}
-              onChange={(e) =>
-                setFormData({ ...formData, notes: e.target.value })
-              }
-            />
+            <div className="form-field">
+              <input
+                type="text"
+                id="role"
+                name="role"
+                placeholder="Role"
+                value={formData.role}
+                onChange={(e) =>
+                  setFormData({ ...formData, role: e.target.value })
+                }
+              />
+              {errors.role && <span className="error-msg">{errors.role}</span>}
+            </div>
+
+            <div className="form-field">
+              <label htmlFor="date">Status</label>
+              <select
+                name="status"
+                id="status"
+                value={formData.status}
+                onChange={(e) =>
+                  setFormData({ ...formData, status: e.target.value })
+                }
+              >
+                <option value="applied">Applied</option>
+                <option value="rejected">Rejected</option>
+                <option value="interview">Interview</option>
+              </select>
+            </div>
+
+            <div className="form-field">
+              <label htmlFor="date">Date Applied</label>
+              <input
+                type="date"
+                id="date"
+                name="date"
+                value={formData.date}
+                onChange={(e) =>
+                  setFormData({ ...formData, date: e.target.value })
+                }
+              />
+              {errors.date && <span className="error-msg">{errors.date}</span>}
+            </div>
+
+            <div className="form-field">
+              <textarea
+                id="notes"
+                name="notes"
+                cols="11"
+                placeholder="Notes"
+                value={formData.notes}
+                onChange={(e) =>
+                  setFormData({ ...formData, notes: e.target.value })
+                }
+              />
+            </div>
             <input type="submit" value="Submit" />
             <button type="button" onClick={cancelForm}>
               Cancel
@@ -170,7 +184,11 @@ export default function Applied() {
                 <td>{application.role}</td>
                 <td>{application.date}</td>
                 <td>
-                  <select name="status" id={`status-${index}`} value={application.status} style={getStatusStyle(application.status)} 
+                  <select
+                    name="status"
+                    id={`status-${index}`}
+                    value={application.status}
+                    style={getStatusStyle(application.status)}
                     onChange={(e) => handleStatusChange(index, e.target.value)}
                   >
                     <option value="applied">Applied</option>
