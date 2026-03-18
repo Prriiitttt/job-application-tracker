@@ -1,6 +1,7 @@
 import React from "react";
 import "./Applied.css";
 import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 
 export default function Applied({ applications, setApplications }) {
   const [showForm, setShowForm] = useState(false);
@@ -75,133 +76,158 @@ export default function Applied({ applications, setApplications }) {
   }
 
   return (
-    <div className="application">
-      <div className="application-header">
-        <h1>My Applications</h1>
-        <button className="add-btn" onClick={handleAddBtn}>
-          + Add New Application
-        </button>
-      </div>
-      {showForm && (
-        <div className="application-form">
-          <form onSubmit={handleSubmit}>
-            <h2>Add Application Form</h2>
-
-            <div className="form-field">
-              <input
-                type="text"
-                id="company"
-                name="company"
-                value={formData.company}
-                placeholder="Company Name"
-                onChange={(e) =>
-                  setFormData({ ...formData, company: e.target.value })
-                }
-              />
-              {errors.company && (
-                <span className="error-msg">{errors.company}</span>
-              )}
-            </div>
-
-            <div className="form-field">
-              <input
-                type="text"
-                id="role"
-                name="role"
-                placeholder="Role"
-                value={formData.role}
-                onChange={(e) =>
-                  setFormData({ ...formData, role: e.target.value })
-                }
-              />
-              {errors.role && <span className="error-msg">{errors.role}</span>}
-            </div>
-
-            <div className="form-field">
-              <label htmlFor="date">Status</label>
-              <select
-                name="status"
-                id="status"
-                value={formData.status}
-                onChange={(e) =>
-                  setFormData({ ...formData, status: e.target.value })
-                }
-              >
-                <option value="applied">Applied</option>
-                <option value="rejected">Rejected</option>
-                <option value="interview">Interview</option>
-              </select>
-            </div>
-
-            <div className="form-field">
-              <label htmlFor="date">Date Applied</label>
-              <input
-                type="date"
-                id="date"
-                name="date"
-                value={formData.date}
-                onChange={(e) =>
-                  setFormData({ ...formData, date: e.target.value })
-                }
-              />
-              {errors.date && <span className="error-msg">{errors.date}</span>}
-            </div>
-
-            <div className="form-field">
-              <textarea
-                id="notes"
-                name="notes"
-                cols="11"
-                placeholder="Notes"
-                value={formData.notes}
-                onChange={(e) =>
-                  setFormData({ ...formData, notes: e.target.value })
-                }
-              />
-            </div>
-            <input type="submit" value="Submit" />
-            <button type="button" onClick={cancelForm}>
-              Cancel
-            </button>
-          </form>
+    <motion.div
+      className="home"
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4, ease: "easeOut" }}
+    >
+      <div className="application">
+        <div className="application-header">
+          <h1>My Applications</h1>
+          <button className="add-btn" onClick={handleAddBtn}>
+            + Add New Application
+          </button>
         </div>
-      )}
-      <div className="applications-table">
-        <table>
-          <thead>
-            <tr>
-              <th>Company</th>
-              <th>Role</th>
-              <th>Date</th>
-              <th>Status</th>
-              <th>Notes</th>
-            </tr>
-          </thead>
-          <tbody>
-            {applications.map((application, index) => (
-              <tr key={application.id}>
-                <td>{application.company}</td>
-                <td>{application.role}</td>
-                <td>{application.date}</td>
-                <td>
-                  <select
-                    name="status"
-                    id={`status-${index}`}
-                    value={application.status}
-                    style={getStatusStyle(application.status)}
-                    onChange={(e) => handleStatusChange(index, e.target.value)}
-                  >
-                    <option value="applied">Applied</option>
-                    <option value="rejected">Rejected</option>
-                    <option value="interview">Interview</option>
-                  </select>
-                </td>
-                <td>{application.notes}</td>
+        <AnimatePresence>
+          {showForm && (
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.25 }}
+            >
+              {
+                <div className="application-form">
+                  <form onSubmit={handleSubmit}>
+                    <h2>Add Application Form</h2>
+
+                    <div className="form-field">
+                      <input
+                        type="text"
+                        id="company"
+                        name="company"
+                        value={formData.company}
+                        placeholder="Company Name"
+                        onChange={(e) =>
+                          setFormData({ ...formData, company: e.target.value })
+                        }
+                      />
+                      {errors.company && (
+                        <span className="error-msg">{errors.company}</span>
+                      )}
+                    </div>
+
+                    <div className="form-field">
+                      <input
+                        type="text"
+                        id="role"
+                        name="role"
+                        placeholder="Role"
+                        value={formData.role}
+                        onChange={(e) =>
+                          setFormData({ ...formData, role: e.target.value })
+                        }
+                      />
+                      {errors.role && (
+                        <span className="error-msg">{errors.role}</span>
+                      )}
+                    </div>
+
+                    <div className="form-field">
+                      <label htmlFor="date">Status</label>
+                      <select
+                        name="status"
+                        id="status"
+                        value={formData.status}
+                        onChange={(e) =>
+                          setFormData({ ...formData, status: e.target.value })
+                        }
+                      >
+                        <option value="applied">Applied</option>
+                        <option value="rejected">Rejected</option>
+                        <option value="interview">Interview</option>
+                      </select>
+                    </div>
+
+                    <div className="form-field">
+                      <label htmlFor="date">Date Applied</label>
+                      <input
+                        type="date"
+                        id="date"
+                        name="date"
+                        value={formData.date}
+                        onChange={(e) =>
+                          setFormData({ ...formData, date: e.target.value })
+                        }
+                      />
+                      {errors.date && (
+                        <span className="error-msg">{errors.date}</span>
+                      )}
+                    </div>
+
+                    <div className="form-field">
+                      <textarea
+                        id="notes"
+                        name="notes"
+                        cols="11"
+                        placeholder="Notes"
+                        value={formData.notes}
+                        onChange={(e) =>
+                          setFormData({ ...formData, notes: e.target.value })
+                        }
+                      />
+                    </div>
+                    <input type="submit" value="Submit" />
+                    <button type="button" onClick={cancelForm}>
+                      Cancel
+                    </button>
+                  </form>
+                </div>
+              }
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        <div className="applications-table">
+          <table>
+            <thead>
+              <tr>
+                <th>Company</th>
+                <th>Role</th>
+                <th>Date</th>
+                <th>Status</th>
+                <th>Notes</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {applications.map((application, index) => (
+                <tr key={application.id}>
+                  <td>{application.company}</td>
+                  <td>{application.role}</td>
+                  <td>{application.date}</td>
+                  <td>
+                    <select
+                      name="status"
+                      id={`status-${index}`}
+                      value={application.status}
+                      style={getStatusStyle(application.status)}
+                      onChange={(e) =>
+                        handleStatusChange(index, e.target.value)
+                      }
+                    >
+                      <option value="applied">Applied</option>
+                      <option value="rejected">Rejected</option>
+                      <option value="interview">Interview</option>
+                    </select>
+                  </td>
+                  <td>{application.notes}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
-    </div>
+    </motion.div>
   );
 }
