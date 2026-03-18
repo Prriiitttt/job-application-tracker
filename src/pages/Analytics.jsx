@@ -1,6 +1,6 @@
 import React from "react";
 import { motion } from "framer-motion";
-
+import "./Analytics.css"
 
 export default function Analytics() {
   return (
@@ -10,7 +10,7 @@ export default function Analytics() {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4, ease: "easeOut" }}
     >
-      <div>sum analytics</div>
+      <div>building...🧱</div>
     </motion.div>
   );
 }

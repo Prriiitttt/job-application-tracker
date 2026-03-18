@@ -39,7 +39,7 @@ function App() {
             },
             {
               path: "analytics",
-              element: <Analytics />,
+              element: <Analytics applications={applications}/>,
             },
           ],
         },
