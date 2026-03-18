@@ -29,7 +29,7 @@ a > img {
 
 .is-active {
   filter: drop-shadow(0 2px 8px rgb(255, 255, 255));
-  transform: scale(1.2);
+  transform: scale(1.05);
 }
 
 main {

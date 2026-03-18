@@ -4,6 +4,12 @@
   border: none;
 }
 
+.blurred {
+  filter: blur(4px);
+  pointer-events: none;
+  opacity: 0.5;
+}
+
 .application-header h1 {
   font-weight: 600;
   padding: 0 8px;
@@ -31,9 +37,17 @@
   background-color: #141c2e;
   border-radius: 12px;
   padding: 24px;
+  width: 360px;
   max-width: 400px;
   border: 1px solid rgba(79, 142, 247, 0.2);
   margin-top: 20px;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 110;
+  max-height: 90vh;
+  overflow-y: auto;
 }
 
 .application-form form {

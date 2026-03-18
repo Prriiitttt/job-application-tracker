@@ -83,7 +83,7 @@ export default function Applied({ applications, setApplications }) {
       transition={{ duration: 0.4, ease: "easeOut" }}
     >
       <div className="application">
-        <div className="application-header">
+        <div className={`application-header ${showForm ? "blurred" : ""}`}>
           <h1>My Applications</h1>
           <button className="add-btn" onClick={handleAddBtn}>
             + Add New Application
@@ -92,104 +92,102 @@ export default function Applied({ applications, setApplications }) {
         <AnimatePresence>
           {showForm && (
             <motion.div
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              transition={{ duration: 0.25 }}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1}}
+              exit={{ opacity: 0}}
+              transition={{ duration: 0.25, ease:'easeOut' }}
             >
-              {
-                <div className="application-form">
-                  <form onSubmit={handleSubmit}>
-                    <h2>Add Application Form</h2>
+              <div className="application-form">
+                <form onSubmit={handleSubmit}>
+                  <h2>Add Application Form</h2>
 
-                    <div className="form-field">
-                      <input
-                        type="text"
-                        id="company"
-                        name="company"
-                        value={formData.company}
-                        placeholder="Company Name"
-                        onChange={(e) =>
-                          setFormData({ ...formData, company: e.target.value })
-                        }
-                      />
-                      {errors.company && (
-                        <span className="error-msg">{errors.company}</span>
-                      )}
-                    </div>
+                  <div className="form-field">
+                    <input
+                      type="text"
+                      id="company"
+                      name="company"
+                      value={formData.company}
+                      placeholder="Company Name"
+                      onChange={(e) =>
+                        setFormData({ ...formData, company: e.target.value })
+                      }
+                    />
+                    {errors.company && (
+                      <span className="error-msg">{errors.company}</span>
+                    )}
+                  </div>
 
-                    <div className="form-field">
-                      <input
-                        type="text"
-                        id="role"
-                        name="role"
-                        placeholder="Role"
-                        value={formData.role}
-                        onChange={(e) =>
-                          setFormData({ ...formData, role: e.target.value })
-                        }
-                      />
-                      {errors.role && (
-                        <span className="error-msg">{errors.role}</span>
-                      )}
-                    </div>
+                  <div className="form-field">
+                    <input
+                      type="text"
+                      id="role"
+                      name="role"
+                      placeholder="Role"
+                      value={formData.role}
+                      onChange={(e) =>
+                        setFormData({ ...formData, role: e.target.value })
+                      }
+                    />
+                    {errors.role && (
+                      <span className="error-msg">{errors.role}</span>
+                    )}
+                  </div>
 
-                    <div className="form-field">
-                      <label htmlFor="date">Status</label>
-                      <select
-                        name="status"
-                        id="status"
-                        value={formData.status}
-                        onChange={(e) =>
-                          setFormData({ ...formData, status: e.target.value })
-                        }
-                      >
-                        <option value="applied">Applied</option>
-                        <option value="rejected">Rejected</option>
-                        <option value="interview">Interview</option>
-                      </select>
-                    </div>
+                  <div className="form-field">
+                    <label htmlFor="date">Status</label>
+                    <select
+                      name="status"
+                      id="status"
+                      value={formData.status}
+                      onChange={(e) =>
+                        setFormData({ ...formData, status: e.target.value })
+                      }
+                    >
+                      <option value="applied">Applied</option>
+                      <option value="rejected">Rejected</option>
+                      <option value="interview">Interview</option>
+                    </select>
+                  </div>
 
-                    <div className="form-field">
-                      <label htmlFor="date">Date Applied</label>
-                      <input
-                        type="date"
-                        id="date"
-                        name="date"
-                        value={formData.date}
-                        onChange={(e) =>
-                          setFormData({ ...formData, date: e.target.value })
-                        }
-                      />
-                      {errors.date && (
-                        <span className="error-msg">{errors.date}</span>
-                      )}
-                    </div>
+                  <div className="form-field">
+                    <label htmlFor="date">Date Applied</label>
+                    <input
+                      type="date"
+                      id="date"
+                      name="date"
+                      value={formData.date}
+                      onChange={(e) =>
+                        setFormData({ ...formData, date: e.target.value })
+                      }
+                    />
+                    {errors.date && (
+                      <span className="error-msg">{errors.date}</span>
+                    )}
+                  </div>
 
-                    <div className="form-field">
-                      <textarea
-                        id="notes"
-                        name="notes"
-                        cols="11"
-                        placeholder="Notes"
-                        value={formData.notes}
-                        onChange={(e) =>
-                          setFormData({ ...formData, notes: e.target.value })
-                        }
-                      />
-                    </div>
-                    <input type="submit" value="Submit" />
-                    <button type="button" onClick={cancelForm}>
-                      Cancel
-                    </button>
-                  </form>
-                </div>
-              }
+                  <div className="form-field">
+                    <textarea
+                      id="notes"
+                      name="notes"
+                      cols="11"
+                      placeholder="Notes"
+                      value={formData.notes}
+                      onChange={(e) =>
+                        setFormData({ ...formData, notes: e.target.value })
+                      }
+                    />
+                  </div>
+                  <input type="submit" value="Submit" />
+                  <button type="button" onClick={cancelForm}>
+                    Cancel
+                  </button>
+                </form>
+              </div>
             </motion.div>
           )}
         </AnimatePresence>
 
-        <div className="applications-table">
+        <div className={`applications-table ${showForm ? "blurred" : ""}`}>
           <table>
             <thead>
               <tr>
