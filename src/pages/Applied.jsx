@@ -1,19 +1,15 @@
 import React from "react";
 import "./Applied.css";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 
-export default function Applied() {
+export default function Applied({ applications, setApplications }) {
   const [showForm, setShowForm] = useState(false);
   const [formData, setFormData] = useState({
     company: "",
     role: "",
     date: "",
-    status: "Applied",
+    status: "applied",
     notes: "",
-  });
-  const [applications, setApplications] = useState(() => {
-    const savedApplications = localStorage.getItem("applications");
-    return savedApplications ? JSON.parse(savedApplications) : [];
   });
   const [errors, setErrors] = useState({});
 
@@ -23,6 +19,14 @@ export default function Applied() {
 
   function cancelForm() {
     setShowForm(false);
+    setFormData({
+      company: "",
+      role: "",
+      date: "",
+      status: "applied",
+      notes: "",
+    });
+    setErrors({});
   }
 
   function validateForm() {
@@ -49,15 +53,11 @@ export default function Applied() {
       company: "",
       role: "",
       date: "",
-      status: "Applied",
+      status: "applied",
       notes: "",
     });
     setShowForm(false);
   }
-
-  useEffect(() => {
-    localStorage.setItem("applications", JSON.stringify(applications));
-  }, [applications]);
 
   function handleStatusChange(index, newStatus) {
     const updatedApplications = [...applications];
@@ -66,11 +66,11 @@ export default function Applied() {
   }
 
   function getStatusStyle(status) {
-    if (status === "applied" || status === "Applied")
+    if (status === "applied")
       return { background: "rgba(79,142,247,0.15)", color: "#4f8ef7" };
-    if (status === "interview" || status === "Interview")
+    if (status === "interview")
       return { background: "rgba(0,229,160,0.15)", color: "#00e5a0" };
-    if (status === "rejected" || status === "Rejected")
+    if (status === "rejected")
       return { background: "rgba(255,107,107,0.15)", color: "#ff6b6b" };
   }
 

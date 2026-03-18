@@ -1,19 +1,11 @@
 import React from "react";
-import { useState } from "react";
 import "./Home.css";
 
-export default function Home() {
-
-  const [applications, setApplications] = useState(() => {
-      const savedApplications = localStorage.getItem("applications");
-      return savedApplications ? JSON.parse(savedApplications) : [];
-    });
-
-  console.log(applications)
+export default function Home({ applications }) {
   
-  const appliedApplication = applications.filter((application) => application.status === "applied" ||  application.status === "Applied")
-  const rejectedApplication = applications.filter((application) => application.status === "rejected" ||  application.status === "Rejected")
-  const interviewSetup = applications.filter((application) => application.status === "interview" ||  application.status === "Interview")
+  const appliedApplication = applications.filter((application) => application.status === "applied")
+  const rejectedApplication = applications.filter((application) => application.status === "rejected")
+  const interviewApplication= applications.filter((application) => application.status === "interview")
 
   return (
     <div className="home">
@@ -29,7 +21,7 @@ export default function Home() {
         </div>
         <div className="tile interviews">
           <h3>Interviews</h3>
-          <p className="tile-count">{interviewSetup.length}</p>
+          <p className="tile-count">{interviewApplication.length}</p>
         </div>
         <div className="tile rejected">
           <h3>Rejected</h3>
