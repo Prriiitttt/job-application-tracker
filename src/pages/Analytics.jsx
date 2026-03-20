@@ -51,6 +51,18 @@ export default function Analytics({ applications }) {
       .slice(-6);
   }
 
+  function getStreak() {
+    const allDates = new Set(applications.map(app => app.date))
+    const today = new Date()
+    let streak = 0 
+    
+    while(allDates.has(today.toISOString().split("T")[0])) {
+      streak++
+      today.setDate(today.getDate() - 1)
+    }
+    return streak
+  }
+
   return (
     <motion.div
       className="analytics"
