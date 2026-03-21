@@ -88,7 +88,7 @@ export default function Analytics({ applications }) {
   }
 
   const count = getThisWeekCount();
-  const percentage = Math.min((count /(weeklyGoal || 1)) * 100, 100);
+  const percentage = Math.min((count / (weeklyGoal || 1)) * 100, 100);
 
   return (
     <motion.div
@@ -100,7 +100,8 @@ export default function Analytics({ applications }) {
       <h1>Job Application Analytics</h1>
       <div className="analytics-charts">
         <div className="chart-card">
-          <ResponsiveContainer width="80%" height={240}>
+          <h3>Applications Per Week</h3>
+          <ResponsiveContainer width="100%" height={240}>
             <BarChart data={getWeeklyData()}>
               <XAxis dataKey="week" />
               <YAxis />
@@ -110,7 +111,8 @@ export default function Analytics({ applications }) {
           </ResponsiveContainer>
         </div>
         <div className="chart-card">
-          <ResponsiveContainer width="60%" height={240}>
+          <h3>Status Breakdown</h3>
+          <ResponsiveContainer width="100%" height={240}>
             <PieChart>
               <Pie
                 data={getStatusData()}

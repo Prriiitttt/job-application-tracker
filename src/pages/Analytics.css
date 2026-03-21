@@ -1,5 +1,6 @@
 .analytics {
   padding: 24px;
+  width: 60vw;
 }
 
 .analytics h1 {
@@ -43,6 +44,7 @@
   border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
+.chart-card h3, 
 .streak-card h3,
 .goal-tracker h3 {
   color: #64748b;

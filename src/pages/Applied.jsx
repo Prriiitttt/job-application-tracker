@@ -144,7 +144,6 @@ export default function Applied({ applications, setApplications }) {
                       }
                     >
                       <option value="applied">Applied</option>
-                      <option value="rejected">Rejected</option>
                       <option value="interview">Interview</option>
                     </select>
                   </div>
