@@ -1,4 +1,5 @@
 import React from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import "./Analytics.css";
 import {
@@ -12,6 +13,15 @@ import {
 import { PieChart, Pie, Cell } from "recharts";
 
 export default function Analytics({ applications }) {
+  const [weeklyGoal, setWeeklyGoal] = useState(() => {
+    const savedGoal = localStorage.getItem("weeklyGoal");
+    return savedGoal ? JSON.parse(savedGoal) : 5;
+  });
+
+  useEffect(() => {
+    localStorage.setItem("weeklyGoal", JSON.stringify(weeklyGoal));
+  }, [weeklyGoal]);
+
   function getStatusData() {
     const applied = applications.filter(
       (application) => application.status === "applied",
@@ -52,16 +62,33 @@ export default function Analytics({ applications }) {
   }
 
   function getStreak() {
-    const allDates = new Set(applications.map(app => app.date))
-    const today = new Date()
-    let streak = 0 
-    
-    while(allDates.has(today.toISOString().split("T")[0])) {
-      streak++
-      today.setDate(today.getDate() - 1)
+    const allDates = new Set(applications.map((app) => app.date));
+    const today = new Date();
+    let streak = 0;
+
+    while (allDates.has(today.toISOString().split("T")[0])) {
+      streak++;
+      today.setDate(today.getDate() - 1);
     }
-    return streak
+    return streak;
   }
+
+  function getThisWeekCount() {
+    const date = new Date();
+    const todayString = date.toISOString().split("T")[0];
+
+    const dayOfWeek = date.getDay();
+    const daysToMonday = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
+    date.setDate(date.getDate() - daysToMonday);
+    const mondayString = date.toISOString().split("T")[0];
+    const finalCount = applications.filter(
+      (app) => app.date >= mondayString && app.date <= todayString,
+    );
+    return finalCount.length;
+  }
+
+  const count = getThisWeekCount();
+  const percentage = Math.min((count / weeklyGoal) * 100, 100);
 
   return (
     <motion.div
@@ -99,6 +126,43 @@ export default function Analytics({ applications }) {
               <Tooltip />
             </PieChart>
           </ResponsiveContainer>
+        </div>
+        <div className="streak-card">
+          <h3>Application Streak</h3>
+          <div className="streak-count">
+            <span>{getStreak()}</span>
+            <span>🔥</span>
+          </div>
+          <p>day streak</p>
+        </div>
+        <div className="goal-tracker">
+          <h3>Weekly Goal</h3>
+          <div className="goal-input">
+            <label htmlFor="">Apply To</label>
+            <input
+              type="number"
+              min="1"
+              max="100"
+              value={weeklyGoal}
+              onChange={(e) => setWeeklyGoal(Number(e.target.value))}
+            />
+            <label htmlFor="">Job this week</label>
+          </div>
+          <div className="goal-progress">
+            <span>
+              {count} of {weeklyGoal} applied
+            </span>
+            <span>{Math.round(percentage)}%</span>
+          </div>
+          <div className="progress-bar">
+            <div
+              className="progress-bar-fill"
+              style={{
+                width: `${percentage}%`,
+                background: percentage >= 100 ? "#4f8ef7" : "#00e5a0",
+              }}
+            ></div>
+          </div>
         </div>
       </div>
     </motion.div>
