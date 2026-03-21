@@ -88,7 +88,7 @@ export default function Analytics({ applications }) {
   }
 
   const count = getThisWeekCount();
-  const percentage = Math.min((count / weeklyGoal) * 100, 100);
+  const percentage = Math.min((count /(weeklyGoal || 1)) * 100, 100);
 
   return (
     <motion.div
@@ -100,7 +100,7 @@ export default function Analytics({ applications }) {
       <h1>Job Application Analytics</h1>
       <div className="analytics-charts">
         <div className="chart-card">
-          <ResponsiveContainer width="80%" height={300}>
+          <ResponsiveContainer width="80%" height={240}>
             <BarChart data={getWeeklyData()}>
               <XAxis dataKey="week" />
               <YAxis />
@@ -110,7 +110,7 @@ export default function Analytics({ applications }) {
           </ResponsiveContainer>
         </div>
         <div className="chart-card">
-          <ResponsiveContainer width="80%" height={300}>
+          <ResponsiveContainer width="60%" height={240}>
             <PieChart>
               <Pie
                 data={getStatusData()}
@@ -138,15 +138,24 @@ export default function Analytics({ applications }) {
         <div className="goal-tracker">
           <h3>Weekly Goal</h3>
           <div className="goal-input">
-            <label htmlFor="">Apply To</label>
+            <span>Apply To</span>
             <input
               type="number"
-              min="1"
-              max="100"
+              // min={1}
+              // max={100}
+              // step="0"
               value={weeklyGoal}
-              onChange={(e) => setWeeklyGoal(Number(e.target.value))}
+              onChange={(e) => {
+                const raw = e.target.value;
+                if (raw === "") {
+                  setWeeklyGoal("");
+                  return;
+                }
+                const val = Number(raw);
+                if (val >= 1) setWeeklyGoal(val);
+              }}
             />
-            <label htmlFor="">Job this week</label>
+            <span>Job this week</span>
           </div>
           <div className="goal-progress">
             <span>
