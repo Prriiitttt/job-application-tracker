@@ -79,3 +79,54 @@
 .tile-count {
   font-weight: 600;
 }
+
+@media (max-width: 430px) {
+  .home {
+    width: 100%;
+    padding: 12px;
+  }
+
+  .home .tiles {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: auto auto auto;
+    height: auto;
+    width: 100%;
+    gap: 12px;
+  }
+
+  .home .total-Applications {
+    grid-column: 1 / 3;
+    grid-row: 1 / 2;
+  }
+
+  .home .applied {
+    grid-column: 1 / 2;
+    grid-row: 2 / 3;
+  }
+
+  .home .interviews {
+    grid-column: 2 / 3;
+    grid-row: 2 / 3;
+  }
+
+  .home .rejected {
+    grid-column: 1 / 3;
+    grid-row: 3 / 4;
+  }
+
+  .home .tile {
+    padding: 16px;
+    min-height: 100px;
+  }
+
+  .home .total-Applications > .tile-count {
+    font-size: 32px;
+  }
+
+  .home .applied > .tile-count,
+  .home .interviews > .tile-count,
+  .home .rejected > .tile-count {
+    font-size: 24px;
+  }
+}
