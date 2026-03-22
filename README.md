@@ -35,4 +35,3 @@ npm run dev
 ## What I Learned
 
 Built this from scratch. Went deep on React Router nested routing, localStorage persistence patterns, responsive design, and CSS Grid. First project where I thought seriously about UX at every step.
-```
