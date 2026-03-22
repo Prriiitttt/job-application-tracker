@@ -2,18 +2,18 @@ import React from "react";
 import "./Layout.css";
 import { Outlet } from "react-router-dom";
 import { NavLink } from "react-router-dom";
-import { House, ListFilterPlus, ChartPie} from "lucide-react";
+import { House, ListFilterPlus, ChartPie, Rocket } from "lucide-react";
 
 export default function Layout() {
   return (
     <div className="layout">
       <div className="mobile-header">
-        <img src="/src/assets/appIcon.png" alt="JobTrackr" />
+        <Rocket size={44} color="#4f8ef7" />
         <span>JobTrackr</span>
       </div>
       <aside>
         <nav>
-          <img src="/src/assets/appIcon.png" alt="Job Tracker Logo" />
+          <Rocket size={32} color="#4f8ef7" />
           <NavLink
             className={({ isActive }) => (isActive ? "is-active" : "")}
             end
