@@ -53,6 +53,7 @@ main {
     width: 100%;
     background: #0f1629;
     border-bottom: 1px solid rgba(255,255,255,0.06);
+    z-index: 1;
   }
 
   .mobile-header img {

@@ -224,6 +224,7 @@ tbody tr:hover .delete-btn {
     border: none;
     display: flex;
     justify-content: space-between;
+    gap: 28px;
     align-items: center;
   }
 
