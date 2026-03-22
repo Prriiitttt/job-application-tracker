@@ -1,16 +1,38 @@
-# React + Vite
+# JobTrackr
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A clean, minimal job application tracker built with React. Log applications, track status, and monitor your progress.
 
-Currently, two official plugins are available:
+## Live Demo
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+https://job-trackr-umber.vercel.app/
 
-## React Compiler
+## What It Does
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- Log job applications with company, role, date, status and notes
+- Update application status inline — Applied, Interview, Rejected
+- Dashboard overview showing total applications at a glance
+- Analytics with weekly application trends, status breakdown, application streak and weekly goal tracker
+- All data stored locally in your browser
+- Responsive — works on mobile and desktop
 
-## Expanding the ESLint configuration
+## Built With
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+- React
+- React Router v6
+- Recharts
+- Framer Motion
+- Lucide React
+- LocalStorage
+
+## Running Locally
+```bash
+git clone https://github.com/Prriiitttt/jobtrackr
+cd jobtrackr
+npm install
+npm run dev
+```
+
+## What I Learned
+
+Built this from scratch. Went deep on React Router nested routing, localStorage persistence patterns, responsive design, and CSS Grid. First project where I thought seriously about UX at every step.
+```
