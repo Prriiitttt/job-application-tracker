@@ -5,6 +5,7 @@ import Layout from "./components/Layout";
 import Home from "./pages/Home";
 import Applied from "./pages/Applied";
 import Analytics from "./pages/Analytics";
+import Error from "./pages/Error";
 
 function App() {
   const [applications, setApplications] = useState(() => {
@@ -22,7 +23,7 @@ function App() {
         {
           path: "/",
           element: <Layout />,
-          errorElement: <div>404 - Page not found</div>,
+          errorElement: <Error />,
           children: [
             {
               index: true,

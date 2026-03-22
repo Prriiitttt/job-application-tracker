@@ -1,0 +1,49 @@
+.error-page {
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: #0a0f1e;
+  gap: 8px;
+  box-sizing: border-box;
+}
+
+.error-heading {
+  font-size: 100px;
+  color: #4f8ef7;
+  margin: 0;
+}
+
+.error-desc {
+  font-size: 24px;
+  font-weight: 400;
+  color: #f1f5f9;
+  margin: 0;
+}
+
+.error-text {
+  font-size: 14px;
+  color: #64748b;
+  margin: 0;
+}
+
+.error-btn {
+  margin-top: 12px;
+  background-color: #4f8ef7;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 24px;
+  font-size: 14px;
+  font-weight: 600;
+  font-family: Inter, sans-serif;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.error-btn:hover {
+  background-color: #3a7de0;
+}
