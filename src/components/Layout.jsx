@@ -2,6 +2,7 @@ import React from "react";
 import "./Layout.css";
 import { Outlet } from "react-router-dom";
 import { NavLink } from "react-router-dom";
+import { House, ListFilterPlus, ChartPie} from "lucide-react";
 
 export default function Layout() {
   return (
@@ -18,19 +19,19 @@ export default function Layout() {
             end
             to="/"
           >
-            <img src="/src/assets/homeIcon.png" alt="" />
+            <House size={28} />
           </NavLink>
           <NavLink
             to="/applied"
             className={({ isActive }) => (isActive ? "is-active" : "")}
           >
-            <img src="/src/assets/appliedIcon.png" alt="" />
+            <ListFilterPlus size={28} />
           </NavLink>
           <NavLink
             to="/analytics"
             className={({ isActive }) => (isActive ? "is-active" : "")}
           >
-            <img src="/src/assets/analyticsIcon.png" alt="" />
+            <ChartPie size={28} />
           </NavLink>
         </nav>
       </aside>
