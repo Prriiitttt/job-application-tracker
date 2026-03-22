@@ -206,10 +206,10 @@ export default function Applied({ applications, setApplications }) {
             <tbody>
               {applications.map((application, index) => (
                 <tr key={application.id}>
-                  <td>{application.company}</td>
-                  <td>{application.role}</td>
-                  <td>{application.date}</td>
-                  <td>
+                  <td data-label="Company">{application.company}</td>
+                  <td data-label="Role">{application.role}</td>
+                  <td data-label="Date">{application.date}</td>
+                  <td data-label="Status">
                     <select
                       name="status"
                       id={`status-${index}`}
@@ -224,8 +224,8 @@ export default function Applied({ applications, setApplications }) {
                       <option value="interview">Interview</option>
                     </select>
                   </td>
-                  <td>{application.notes}</td>
-                  <td>
+                  <td data-label="Notes">{application.notes}</td>
+                  <td data-label="">
                     <button
                     className="delete-btn"
                     onClick={() => handleDelete(application.id)}

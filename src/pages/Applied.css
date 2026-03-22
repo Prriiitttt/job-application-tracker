@@ -16,21 +16,21 @@
 }
 
 .application-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .add-btn {
-    background-color: #4f8ef7;
-    color: #0a0f1e;
-    height: 32px;
-    font-family: Inter, sans-serif;
-    font-weight: 500;
-    border: none;
-    border-radius: 8px;
-    padding: 0 16px;
-    cursor: pointer;
+  background-color: #4f8ef7;
+  color: #0a0f1e;
+  height: 32px;
+  font-family: Inter, sans-serif;
+  font-weight: 500;
+  border: none;
+  border-radius: 8px;
+  padding: 0 16px;
+  cursor: pointer;
 }
 
 .application-form {
@@ -57,9 +57,9 @@
 }
 
 .form-field {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
 }
 
 .application-form label {
@@ -166,4 +166,77 @@ tbody select {
 
 tbody tr:hover .delete-btn {
   opacity: 1;
+}
+
+@media (max-width: 430px) {
+  .application-header {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px;
+    gap: 8px;
+  }
+
+  .application-header h1 {
+    font-size: 20px;
+    margin: 0;
+  }
+
+  .add-btn {
+    width: auto;
+    height: auto;
+    font-size: 10px;
+    padding: 6px 10px;
+    white-space: nowrap;
+  }
+
+  .applications-table {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+  }
+
+  .application table,
+  .application thead,
+  .application tbody,
+  .application th,
+  .application td,
+  .application tr {
+    display: block;
+  }
+
+  .application thead tr {
+    display: none;
+  }
+
+  .application tbody tr {
+    background: #141c2e;
+    border-radius: 12px;
+    padding: 16px;
+    margin: 16px 16px 0 16px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    width: 95%;
+  }
+
+  .application tbody td {
+    padding: 6px 0;
+    border: none;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .application tbody td::before {
+    content: attr(data-label);
+    color: #64748b;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    font-weight: 600;
+  }
+
+  .application .delete-btn {
+    opacity: 1;
+  }
 }
