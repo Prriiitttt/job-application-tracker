@@ -6,6 +6,10 @@ import { NavLink } from "react-router-dom";
 export default function Layout() {
   return (
     <div className="layout">
+      <div className="mobile-header">
+        <img src="/src/assets/appIcon.png" alt="JobTrackr" />
+        <span>JobTrackr</span>
+      </div>
       <aside>
         <nav>
           <img src="/src/assets/appIcon.png" alt="Job Tracker Logo" />
