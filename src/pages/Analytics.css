@@ -1,5 +1,5 @@
 .analytics {
-  padding: 24px;
+  padding: 12px;
   width: 60vw;
 }
 
@@ -12,7 +12,7 @@
   display: grid;
   grid-template-columns: 1fr 1fr;
   grid-template-rows: auto auto auto;
-  gap: 16px;
+  gap: 14px;
 }
 
 .analytics-charts .chart-card:first-child {
@@ -51,7 +51,6 @@
   font-size: 11px;
   text-transform: uppercase;
   letter-spacing: 1.5px;
-  margin-bottom: 12px;
 }
 
 .streak-count {

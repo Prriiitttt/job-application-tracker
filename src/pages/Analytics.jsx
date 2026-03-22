@@ -101,7 +101,7 @@ export default function Analytics({ applications }) {
       <div className="analytics-charts">
         <div className="chart-card">
           <h3>Applications Per Week</h3>
-          <ResponsiveContainer width="100%" height={240}>
+          <ResponsiveContainer width="100%" height={230}>
             <BarChart data={getWeeklyData()}>
               <XAxis dataKey="week" />
               <YAxis />
@@ -112,7 +112,7 @@ export default function Analytics({ applications }) {
         </div>
         <div className="chart-card">
           <h3>Status Breakdown</h3>
-          <ResponsiveContainer width="100%" height={240}>
+          <ResponsiveContainer width="100%" height={230}>
             <PieChart>
               <Pie
                 data={getStatusData()}
