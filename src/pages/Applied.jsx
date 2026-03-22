@@ -75,6 +75,11 @@ export default function Applied({ applications, setApplications }) {
       return { background: "rgba(255,107,107,0.15)", color: "#ff6b6b" };
   }
 
+  function handleDelete(id) {
+    const updatedApplications = applications.filter((app) => app.id !== id);
+    setApplications(updatedApplications);
+  }
+
   return (
     <motion.div
       className="home"
@@ -93,9 +98,9 @@ export default function Applied({ applications, setApplications }) {
           {showForm && (
             <motion.div
               initial={{ opacity: 0 }}
-              animate={{ opacity: 1}}
-              exit={{ opacity: 0}}
-              transition={{ duration: 0.25, ease:'easeOut' }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.25, ease: "easeOut" }}
             >
               <div className="application-form">
                 <form onSubmit={handleSubmit}>
@@ -195,6 +200,7 @@ export default function Applied({ applications, setApplications }) {
                 <th>Date</th>
                 <th>Status</th>
                 <th>Notes</th>
+                <th></th>
               </tr>
             </thead>
             <tbody>
@@ -219,6 +225,12 @@ export default function Applied({ applications, setApplications }) {
                     </select>
                   </td>
                   <td>{application.notes}</td>
+                  <td>
+                    <button
+                    className="delete-btn"
+                    onClick={() => handleDelete(application.id)}
+                  >🗑️</button>
+                  </td>
                 </tr>
               ))}
             </tbody>
