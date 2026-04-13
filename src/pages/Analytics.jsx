@@ -1,6 +1,7 @@
 import React from "react";
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
+import { supabase } from "../lib/supabase";
 import "./Analytics.css";
 import {
   BarChart,
@@ -12,14 +13,14 @@ import {
 } from "recharts";
 import { PieChart, Pie, Cell } from "recharts";
 
-export default function Analytics({ applications }) {
-  const [weeklyGoal, setWeeklyGoal] = useState(() => {
-    const savedGoal = localStorage.getItem("weeklyGoal");
-    return savedGoal ? JSON.parse(savedGoal) : 5;
-  });
+export default function Analytics({ applications, session }) {
+  const [weeklyGoal, setWeeklyGoal] = useState(
+    session.user.user_metadata?.weeklyGoal ?? 5,
+  );
 
   useEffect(() => {
-    localStorage.setItem("weeklyGoal", JSON.stringify(weeklyGoal));
+    if (weeklyGoal === "") return;
+    supabase.auth.updateUser({ data: { weeklyGoal } });
   }, [weeklyGoal]);
 
   function getStatusData() {
@@ -42,7 +43,7 @@ export default function Analytics({ applications }) {
   function getWeeklyData() {
     const weeks = {};
     applications.forEach((app) => {
-      const date = new Date(app.date);
+      const date = new Date(app.data);
       const dayOfWeek = date.getDay();
       const daysToMonday = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
       date.setDate(date.getDate() - daysToMonday);
@@ -62,7 +63,7 @@ export default function Analytics({ applications }) {
   }
 
   function getStreak() {
-    const allDates = new Set(applications.map((app) => app.date));
+    const allDates = new Set(applications.map((app) => app.data));
     const today = new Date();
     let streak = 0;
 
@@ -82,7 +83,7 @@ export default function Analytics({ applications }) {
     date.setDate(date.getDate() - daysToMonday);
     const mondayString = date.toISOString().split("T")[0];
     const finalCount = applications.filter(
-      (app) => app.date >= mondayString && app.date <= todayString,
+      (app) => app.data >= mondayString && app.data <= todayString,
     );
     return finalCount.length;
   }
@@ -133,7 +134,7 @@ export default function Analytics({ applications }) {
           <h3>Application Streak</h3>
           <div className="streak-count">
             <span>{getStreak()}</span>
-            <span>🔥</span>
+            <span>{"\uD83D\uDD25"}</span>
           </div>
           <p>day streak</p>
         </div>
@@ -143,9 +144,6 @@ export default function Analytics({ applications }) {
             <span>Apply To</span>
             <input
               type="number"
-              // min={1}
-              // max={100}
-              // step="0"
               value={weeklyGoal}
               onChange={(e) => {
                 const raw = e.target.value;

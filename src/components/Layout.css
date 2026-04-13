@@ -50,6 +50,20 @@ main {
   flex: 1;
 }
 
+.logout-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  margin-top: auto;
+  padding: 6px;
+  color: #64748b;
+  transition: color 0.3s;
+}
+
+.logout-btn:hover {
+  color: #ff6b6b;
+}
+
 @media (max-width: 430px) {
   .layout {
     flex-direction: column;
@@ -98,6 +112,10 @@ main {
 
   nav > svg {
     display: none;
+  }
+
+  .logout-btn {
+    margin-top: 0;
   }
 
   main {

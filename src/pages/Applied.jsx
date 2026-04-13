@@ -3,12 +3,17 @@ import "./Applied.css";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
-export default function Applied({ applications, setApplications }) {
+export default function Applied({
+  applications,
+  addApplication,
+  updateApplication,
+  deleteApplication,
+}) {
   const [showForm, setShowForm] = useState(false);
   const [formData, setFormData] = useState({
     company: "",
     role: "",
-    date: "",
+    data: "",
     status: "applied",
     notes: "",
   });
@@ -23,7 +28,7 @@ export default function Applied({ applications, setApplications }) {
     setFormData({
       company: "",
       role: "",
-      date: "",
+      data: "",
       status: "applied",
       notes: "",
     });
@@ -34,7 +39,7 @@ export default function Applied({ applications, setApplications }) {
     const newErrors = {};
     if (!formData.company) newErrors.company = "Company is required";
     if (!formData.role) newErrors.role = "Role is required";
-    if (!formData.date) newErrors.date = "Date is required";
+    if (!formData.data) newErrors.data = "Date is required";
     return newErrors;
   }
 
@@ -49,21 +54,19 @@ export default function Applied({ applications, setApplications }) {
 
     setErrors({});
 
-    setApplications([...applications, { ...formData, id: Date.now() }]);
+    addApplication(formData);
     setFormData({
       company: "",
       role: "",
-      date: "",
+      data: "",
       status: "applied",
       notes: "",
     });
     setShowForm(false);
   }
 
-  function handleStatusChange(index, newStatus) {
-    const updatedApplications = [...applications];
-    updatedApplications[index].status = newStatus;
-    setApplications(updatedApplications);
+  function handleStatusChange(id, newStatus) {
+    updateApplication(id, { status: newStatus });
   }
 
   function getStatusStyle(status) {
@@ -76,8 +79,7 @@ export default function Applied({ applications, setApplications }) {
   }
 
   function handleDelete(id) {
-    const updatedApplications = applications.filter((app) => app.id !== id);
-    setApplications(updatedApplications);
+    deleteApplication(id);
   }
 
   return (
@@ -139,7 +141,7 @@ export default function Applied({ applications, setApplications }) {
                   </div>
 
                   <div className="form-field">
-                    <label htmlFor="date">Status</label>
+                    <label htmlFor="data">Status</label>
                     <select
                       name="status"
                       id="status"
@@ -154,18 +156,18 @@ export default function Applied({ applications, setApplications }) {
                   </div>
 
                   <div className="form-field">
-                    <label htmlFor="date">Date Applied</label>
+                    <label htmlFor="data">Date Applied</label>
                     <input
                       type="date"
-                      id="date"
-                      name="date"
-                      value={formData.date}
+                      id="data"
+                      name="data"
+                      value={formData.data}
                       onChange={(e) =>
-                        setFormData({ ...formData, date: e.target.value })
+                        setFormData({ ...formData, data: e.target.value })
                       }
                     />
-                    {errors.date && (
-                      <span className="error-msg">{errors.date}</span>
+                    {errors.data && (
+                      <span className="error-msg">{errors.data}</span>
                     )}
                   </div>
 
@@ -204,19 +206,19 @@ export default function Applied({ applications, setApplications }) {
               </tr>
             </thead>
             <tbody>
-              {applications.map((application, index) => (
+              {applications.map((application) => (
                 <tr key={application.id}>
                   <td data-label="Company">{application.company}</td>
                   <td data-label="Role">{application.role}</td>
-                  <td data-label="Date">{application.date}</td>
+                  <td data-label="Date">{application.data}</td>
                   <td data-label="Status">
                     <select
                       name="status"
-                      id={`status-${index}`}
+                      id={`status-${application.id}`}
                       value={application.status}
                       style={getStatusStyle(application.status)}
                       onChange={(e) =>
-                        handleStatusChange(index, e.target.value)
+                        handleStatusChange(application.id, e.target.value)
                       }
                     >
                       <option value="applied">Applied</option>
@@ -227,9 +229,11 @@ export default function Applied({ applications, setApplications }) {
                   <td data-label="Notes">{application.notes}</td>
                   <td data-label="">
                     <button
-                    className="delete-btn"
-                    onClick={() => handleDelete(application.id)}
-                  >🗑️</button>
+                      className="delete-btn"
+                      onClick={() => handleDelete(application.id)}
+                    >
+                      {"\uD83D\uDDD1\uFE0F"}
+                    </button>
                   </td>
                 </tr>
               ))}
