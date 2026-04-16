@@ -84,6 +84,7 @@
   .home {
     width: 100%;
     padding: 12px;
+    box-sizing: border-box;
   }
 
   .home .tiles {

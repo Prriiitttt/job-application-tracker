@@ -18,6 +18,12 @@ export default function Applied({
     notes: "",
   });
   const [errors, setErrors] = useState({});
+  const [statusOpen, setStatusOpen] = useState(false);
+
+  const statusOptions = [
+    { value: "applied", label: "Applied" },
+    { value: "interview", label: "Interview" },
+  ];
 
   function handleAddBtn() {
     setShowForm(true);
@@ -141,18 +147,46 @@ export default function Applied({
                   </div>
 
                   <div className="form-field">
-                    <label htmlFor="data">Status</label>
-                    <select
-                      name="status"
-                      id="status"
-                      value={formData.status}
-                      onChange={(e) =>
-                        setFormData({ ...formData, status: e.target.value })
-                      }
-                    >
-                      <option value="applied">Applied</option>
-                      <option value="interview">Interview</option>
-                    </select>
+                    <label htmlFor="status">Status</label>
+                    <div className="custom-select">
+                      <button
+                        type="button"
+                        className="custom-select-button"
+                        onClick={() => setStatusOpen(!statusOpen)}
+                      >
+                        <span>
+                          {
+                            statusOptions.find(
+                              (o) => o.value === formData.status,
+                            )?.label
+                          }
+                        </span>
+                        <span className="custom-select-caret">
+                          {statusOpen ? "\u25B4" : "\u25BE"}
+                        </span>
+                      </button>
+                      {statusOpen && (
+                        <ul className="custom-select-list">
+                          {statusOptions.map((opt) => (
+                            <li
+                              key={opt.value}
+                              className={
+                                formData.status === opt.value ? "selected" : ""
+                              }
+                              onClick={() => {
+                                setFormData({
+                                  ...formData,
+                                  status: opt.value,
+                                });
+                                setStatusOpen(false);
+                              }}
+                            >
+                              {opt.label}
+                            </li>
+                          ))}
+                        </ul>
+                      )}
+                    </div>
                   </div>
 
                   <div className="form-field">

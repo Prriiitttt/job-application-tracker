@@ -88,6 +88,68 @@
   box-shadow: 0 0 0 3px rgba(79, 142, 247, 0.15);
 }
 
+.custom-select {
+  position: relative;
+}
+
+.custom-select-button {
+  background-color: #0a0f1e;
+  color: #e2e8f0;
+  border: 1px solid rgba(79, 142, 247, 0.2);
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-family: Inter, sans-serif;
+  font-size: 14px;
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.custom-select-button:focus {
+  border: 1px solid #4f8ef7;
+  box-shadow: 0 0 0 3px rgba(79, 142, 247, 0.15);
+  outline: none;
+}
+
+.custom-select-caret {
+  color: #64748b;
+  font-size: 12px;
+}
+
+.custom-select-list {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  background-color: #0a0f1e;
+  border: 1px solid rgba(79, 142, 247, 0.2);
+  border-radius: 8px;
+  padding: 4px;
+  margin: 0;
+  list-style: none;
+  z-index: 120;
+}
+
+.custom-select-list li {
+  padding: 8px 12px;
+  cursor: pointer;
+  border-radius: 4px;
+  color: #e2e8f0;
+  font-size: 14px;
+}
+
+.custom-select-list li:hover {
+  background-color: rgba(79, 142, 247, 0.1);
+}
+
+.custom-select-list li.selected {
+  background-color: rgba(79, 142, 247, 0.15);
+  color: #4f8ef7;
+}
+
 .application-form input[type="submit"] {
   background-color: #4f8ef7;
   color: white;
@@ -169,6 +231,19 @@ tbody tr:hover .delete-btn {
 }
 
 @media (max-width: 430px) {
+  .application {
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .application-form {
+    width: 80%;
+    max-width: 80%;
+    border-radius: 20px;
+    padding: 20px;
+    box-sizing: border-box;
+  }
+
   .application-header {
     flex-direction: row;
     align-items: center;
@@ -214,9 +289,10 @@ tbody tr:hover .delete-btn {
     background: #141c2e;
     border-radius: 12px;
     padding: 16px;
-    margin: 16px 16px 0 16px;
+    margin: 16px 0 0 0;
     border: 1px solid rgba(255, 255, 255, 0.08);
-    width: 95%;
+    width: 100%;
+    box-sizing: border-box;
   }
 
   .application tbody td {

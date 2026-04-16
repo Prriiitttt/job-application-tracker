@@ -126,9 +126,10 @@
 
 @media (max-width: 430px) {
   .analytics {
-    width: 95%;
-    margin: 16px 16px 0 16px;
+    width: 100%;
+    margin: 0;
     padding: 12px;
+    box-sizing: border-box;
   }
 
   .analytics h1 {
