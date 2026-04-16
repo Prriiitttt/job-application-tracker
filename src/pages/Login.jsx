@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
+import { Rocket } from "lucide-react";
 import { supabase } from "../lib/supabase";
 import "./Login.css";
 
@@ -33,6 +34,14 @@ export default function Login() {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4, ease: "easeOut" }}
     >
+      <div className="login-mobile-header">
+        <Rocket size={44} color="#4f8ef7" />
+        <span>JobTrackr</span>
+      </div>
+      <div className="login-brand">
+        <Rocket size={40} color="#4f8ef7" />
+        <span>JobTrackr</span>
+      </div>
       <div className="login-card">
         <h1>{isSignUp ? "Sign Up" : "Log In"}</h1>
         <form onSubmit={handleSubmit}>
