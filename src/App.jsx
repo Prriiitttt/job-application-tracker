@@ -8,11 +8,19 @@ import Applied from "./pages/Applied";
 import Analytics from "./pages/Analytics";
 import Error from "./pages/Error";
 import Login from "./pages/Login";
+import Loading from "./components/Loading";
 
 function App() {
   const [session, setSession] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [signingOut, setSigningOut] = useState(false);
   const [applications, setApplications] = useState([]);
+
+  const handleSignOut = useCallback(async () => {
+    setSigningOut(true);
+    await supabase.auth.signOut();
+    setSigningOut(false);
+  }, []);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -82,7 +90,7 @@ function App() {
       createBrowserRouter([
         {
           path: "/",
-          element: <Layout session={session} />,
+          element: <Layout session={session} onSignOut={handleSignOut} />,
           errorElement: <Error />,
           children: [
             {
@@ -118,10 +126,12 @@ function App() {
       addApplication,
       updateApplication,
       deleteApplication,
+      handleSignOut,
     ],
   );
 
-  if (loading) return null;
+  if (loading) return <Loading message="Loading" />;
+  if (signingOut) return <Loading message="Signing out" />;
   if (!session) return <Login />;
 
   return <RouterProvider router={router} />;

@@ -1,12 +1,13 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
-import { Rocket } from "lucide-react";
+import { Rocket, Eye, EyeOff } from "lucide-react";
 import { supabase } from "../lib/supabase";
 import "./Login.css";
 
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [isSignUp, setIsSignUp] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -52,16 +53,32 @@ export default function Login() {
             onChange={(e) => setEmail(e.target.value)}
             required
           />
-          <input
-            type="password"
-            placeholder="Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
+          <div className="password-wrapper">
+            <input
+              type={showPassword ? "text" : "password"}
+              placeholder="Password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
+            <button
+              type="button"
+              className="password-toggle"
+              onClick={() => setShowPassword(!showPassword)}
+              aria-label={showPassword ? "Hide password" : "Show password"}
+            >
+              {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+            </button>
+          </div>
           {error && <p className="login-error">{error}</p>}
           <button type="submit" disabled={loading}>
-            {loading ? "Loading..." : isSignUp ? "Sign Up" : "Log In"}
+            {loading ? (
+              <span className="btn-spinner"></span>
+            ) : isSignUp ? (
+              "Sign Up"
+            ) : (
+              "Log In"
+            )}
           </button>
         </form>
         <p className="toggle-auth">

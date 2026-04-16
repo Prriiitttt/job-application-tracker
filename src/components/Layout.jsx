@@ -3,9 +3,8 @@ import "./Layout.css";
 import { Outlet } from "react-router-dom";
 import { NavLink } from "react-router-dom";
 import { House, ListFilterPlus, ChartPie, Rocket, LogOut } from "lucide-react";
-import { supabase } from "../lib/supabase";
 
-export default function Layout({ session }) {
+export default function Layout({ session, onSignOut }) {
   return (
     <div className="layout">
       <div className="mobile-header">
@@ -34,10 +33,7 @@ export default function Layout({ session }) {
           >
             <ChartPie size={28} />
           </NavLink>
-          <button
-            className="logout-btn"
-            onClick={() => supabase.auth.signOut()}
-          >
+          <button className="logout-btn" onClick={onSignOut}>
             <LogOut size={28} />
           </button>
         </nav>
