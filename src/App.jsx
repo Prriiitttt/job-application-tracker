@@ -77,9 +77,6 @@ function App() {
     }
   }, []);
 
-  if (loading) return null;
-  if (!session) return <Login />;
-
   const router = useMemo(
     () =>
       createBrowserRouter([
@@ -123,6 +120,9 @@ function App() {
       deleteApplication,
     ],
   );
+
+  if (loading) return null;
+  if (!session) return <Login />;
 
   return <RouterProvider router={router} />;
 }
