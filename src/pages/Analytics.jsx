@@ -15,10 +15,19 @@ import { PieChart, Pie, Cell } from "recharts";
 import { BarChart3 } from "lucide-react";
 
 export default function Analytics({ applications, session }) {
-  const [weeklyGoal, setWeeklyGoal] = useState(
-    session.user.user_metadata?.weeklyGoal ?? 5,
-  );
+  const [weeklyGoal, setWeeklyGoal] = useState(5);
   const isInitialRender = useRef(true);
+
+  useEffect(() => {
+    supabase
+      .from("user_settings")
+      .select("weekly_goal")
+      .eq("user_id", session.user.id)
+      .single()
+      .then(({ data }) => {
+        if (data) setWeeklyGoal(data.weekly_goal);
+      });
+  }, [session]);
 
   useEffect(() => {
     if (isInitialRender.current) {
@@ -26,8 +35,11 @@ export default function Analytics({ applications, session }) {
       return;
     }
     if (weeklyGoal === "") return;
-    supabase.auth.updateUser({ data: { weeklyGoal } });
-  }, [weeklyGoal]);
+    supabase
+      .from("user_settings")
+      .upsert({ user_id: session.user.id, weekly_goal: weeklyGoal })
+      .then(() => {});
+  }, [weeklyGoal, session]);
 
   function getStatusData() {
     const applied = applications.filter(
