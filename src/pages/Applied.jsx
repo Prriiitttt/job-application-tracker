@@ -2,6 +2,7 @@ import React from "react";
 import "./Applied.css";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { ClipboardList } from "lucide-react";
 
 export default function Applied({
   applications,
@@ -98,9 +99,11 @@ export default function Applied({
       <div className="application">
         <div className={`application-header ${showForm ? "blurred" : ""}`}>
           <h1>My Applications</h1>
-          <button className="add-btn" onClick={handleAddBtn}>
-            + Add New Application
-          </button>
+          {applications.length > 0 && (
+            <button className="add-btn" onClick={handleAddBtn}>
+              + Add New Application
+            </button>
+          )}
         </div>
         <AnimatePresence>
           {showForm && (
@@ -227,53 +230,69 @@ export default function Applied({
           )}
         </AnimatePresence>
 
-        <div className={`applications-table ${showForm ? "blurred" : ""}`}>
-          <table>
-            <thead>
-              <tr>
-                <th>Company</th>
-                <th>Role</th>
-                <th>Date</th>
-                <th>Status</th>
-                <th>Notes</th>
-                <th></th>
-              </tr>
-            </thead>
-            <tbody>
-              {applications.map((application) => (
-                <tr key={application.id}>
-                  <td data-label="Company">{application.company}</td>
-                  <td data-label="Role">{application.role}</td>
-                  <td data-label="Date">{application.data}</td>
-                  <td data-label="Status">
-                    <select
-                      name="status"
-                      id={`status-${application.id}`}
-                      value={application.status}
-                      style={getStatusStyle(application.status)}
-                      onChange={(e) =>
-                        handleStatusChange(application.id, e.target.value)
-                      }
-                    >
-                      <option value="applied">Applied</option>
-                      <option value="rejected">Rejected</option>
-                      <option value="interview">Interview</option>
-                    </select>
-                  </td>
-                  <td data-label="Notes">{application.notes}</td>
-                  <td data-label="">
-                    <button
-                      className="delete-btn"
-                      onClick={() => handleDelete(application.id)}
-                    >
-                      {"\uD83D\uDDD1\uFE0F"}
-                    </button>
-                  </td>
+        {applications.length === 0 ? (
+          <motion.div
+            className={`empty-state ${showForm ? "blurred" : ""}`}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, ease: "easeOut" }}
+          >
+            <ClipboardList size={48} color="#4f8ef7" />
+            <h2>No applications yet</h2>
+            <p>Start tracking your job search by adding your first application.</p>
+            <button className="add-btn" onClick={handleAddBtn}>
+              + Add New Application
+            </button>
+          </motion.div>
+        ) : (
+          <div className={`applications-table ${showForm ? "blurred" : ""}`}>
+            <table>
+              <thead>
+                <tr>
+                  <th>Company</th>
+                  <th>Role</th>
+                  <th>Date</th>
+                  <th>Status</th>
+                  <th>Notes</th>
+                  <th></th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+              </thead>
+              <tbody>
+                {applications.map((application) => (
+                  <tr key={application.id}>
+                    <td data-label="Company">{application.company}</td>
+                    <td data-label="Role">{application.role}</td>
+                    <td data-label="Date">{application.data}</td>
+                    <td data-label="Status">
+                      <select
+                        name="status"
+                        id={`status-${application.id}`}
+                        value={application.status}
+                        style={getStatusStyle(application.status)}
+                        onChange={(e) =>
+                          handleStatusChange(application.id, e.target.value)
+                        }
+                      >
+                        <option value="applied">Applied</option>
+                        <option value="rejected">Rejected</option>
+                        <option value="interview">Interview</option>
+                      </select>
+                    </td>
+                    <td data-label="Notes">{application.notes}</td>
+                    <td data-label="">
+                      <button
+                        className="delete-btn"
+                        onClick={() => handleDelete(application.id)}
+                      >
+                        {"\uD83D\uDDD1\uFE0F"}
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
       </div>
     </motion.div>
   );

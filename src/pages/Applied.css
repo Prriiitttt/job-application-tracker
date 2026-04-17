@@ -230,6 +230,33 @@ tbody tr:hover .delete-btn {
   opacity: 1;
 }
 
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 80px 20px;
+  text-align: center;
+}
+
+.empty-state h2 {
+  color: #f1f5f9;
+  font-weight: 600;
+  margin: 0;
+}
+
+.empty-state p {
+  color: #64748b;
+  font-size: 14px;
+  margin: 0;
+  max-width: 300px;
+}
+
+.empty-state .add-btn {
+  margin-top: 8px;
+}
+
 @media (max-width: 430px) {
   .application {
     width: 100%;

@@ -1,5 +1,5 @@
 import React from "react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import { supabase } from "../lib/supabase";
 import "./Analytics.css";
@@ -12,13 +12,19 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import { PieChart, Pie, Cell } from "recharts";
+import { BarChart3 } from "lucide-react";
 
 export default function Analytics({ applications, session }) {
   const [weeklyGoal, setWeeklyGoal] = useState(
     session.user.user_metadata?.weeklyGoal ?? 5,
   );
+  const isInitialRender = useRef(true);
 
   useEffect(() => {
+    if (isInitialRender.current) {
+      isInitialRender.current = false;
+      return;
+    }
     if (weeklyGoal === "") return;
     supabase.auth.updateUser({ data: { weeklyGoal } });
   }, [weeklyGoal]);
@@ -99,6 +105,18 @@ export default function Analytics({ applications, session }) {
       transition={{ duration: 0.4, ease: "easeOut" }}
     >
       <h1>Job Application Analytics</h1>
+      {applications.length === 0 ? (
+        <motion.div
+          className="empty-state"
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4, ease: "easeOut" }}
+        >
+          <BarChart3 size={48} color="#4f8ef7" />
+          <h2>No data yet</h2>
+          <p>Charts and insights will appear here once you add your first application.</p>
+        </motion.div>
+      ) : (
       <div className="analytics-charts">
         <div className="chart-card">
           <h3>Applications Per Week</h3>
@@ -174,6 +192,7 @@ export default function Analytics({ applications, session }) {
           </div>
         </div>
       </div>
+      )}
     </motion.div>
   );
 }
