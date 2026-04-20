@@ -285,6 +285,117 @@ tbody tr:hover .delete-btn {
   box-shadow: 0 0 0 3px rgba(79, 142, 247, 0.15);
 }
 
+.view-toggle {
+  display: flex;
+  gap: 4px;
+  background-color: #141c2e;
+  border-radius: 8px;
+  padding: 4px;
+}
+
+.view-toggle-btn {
+  background: transparent;
+  border: none;
+  padding: 6px 10px;
+  border-radius: 6px;
+  color: #64748b;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  transition: color 0.2s, background-color 0.2s;
+}
+
+.view-toggle-btn.active {
+  background-color: rgba(79, 142, 247, 0.15);
+  color: #4f8ef7;
+}
+
+.view-toggle-btn:hover {
+  color: #e2e8f0;
+}
+
+.kanban-board {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 16px;
+  margin-top: 20px;
+}
+
+.kanban-column {
+  background-color: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 12px;
+  padding: 16px;
+  min-height: 200px;
+}
+
+.kanban-column-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 16px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #e2e8f0;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.kanban-column-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.kanban-column-count {
+  color: #64748b;
+  font-weight: 400;
+}
+
+.kanban-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.kanban-card {
+  background-color: #141c2e;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  cursor: grab;
+  transition: border-color 0.2s;
+}
+
+.kanban-card:active {
+  cursor: grabbing;
+  border-color: #4f8ef7;
+}
+
+.kanban-card:hover {
+  border-color: rgba(255, 255, 255, 0.15);
+}
+
+.kanban-card-company {
+  color: #f1f5f9;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.kanban-card-role {
+  color: #94a3b8;
+  font-size: 13px;
+}
+
+.kanban-card-date {
+  color: #64748b;
+  font-size: 12px;
+  margin-top: 4px;
+}
+
 .export-btn {
   display: flex;
   align-items: center;
@@ -437,5 +548,13 @@ tbody tr:hover .delete-btn {
 
   .export-btn {
     width: auto;
+  }
+
+  .kanban-board {
+    grid-template-columns: 1fr;
+  }
+
+  .kanban-column {
+    min-height: auto;
   }
 }

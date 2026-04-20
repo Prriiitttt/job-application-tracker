@@ -2,7 +2,7 @@ import React from "react";
 import "./Applied.css";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ClipboardList, Search, Download } from "lucide-react";
+import { ClipboardList, Search, Download, List, LayoutGrid } from "lucide-react";
 
 export default function Applied({
   applications,
@@ -22,6 +22,8 @@ export default function Applied({
   const [statusOpen, setStatusOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [filterStatus, setFilterStatus] = useState("all");
+  const [viewMode, setViewMode] = useState("list");
+  const [draggedId, setDraggedId] = useState(null);
 
   const filteredApplications = applications.filter((app) => {
     const matchesStatus =
@@ -100,6 +102,30 @@ export default function Applied({
     deleteApplication(id);
   }
 
+  const kanbanColumns = [
+    { status: "applied", label: "Applied", color: "#4f8ef7" },
+    { status: "interview", label: "Interview", color: "#00e5a0" },
+    { status: "rejected", label: "Rejected", color: "#ff6b6b" },
+  ];
+
+  function handleDragStart(e, id) {
+    setDraggedId(id);
+    e.dataTransfer.effectAllowed = "move";
+  }
+
+  function handleDragOver(e) {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = "move";
+  }
+
+  function handleDrop(e, newStatus) {
+    e.preventDefault();
+    if (draggedId) {
+      updateApplication(draggedId, { status: newStatus });
+      setDraggedId(null);
+    }
+  }
+
   function exportToCSV() {
     const headers = ["Company", "Role", "Date", "Status", "Notes"];
     const rows = applications.map((app) => [
@@ -137,6 +163,22 @@ export default function Applied({
             <button className="add-btn" onClick={handleAddBtn}>
               + Add New Application
             </button>
+          )}
+          {applications.length > 0 && (
+            <div className="view-toggle">
+              <button
+                className={`view-toggle-btn ${viewMode === "list" ? "active" : ""}`}
+                onClick={() => setViewMode("list")}
+              >
+                <List size={18} />
+              </button>
+              <button
+                className={`view-toggle-btn ${viewMode === "kanban" ? "active" : ""}`}
+                onClick={() => setViewMode("kanban")}
+              >
+                <LayoutGrid size={18} />
+              </button>
+            </div>
           )}
         </div>
         <AnimatePresence>
@@ -306,7 +348,7 @@ export default function Applied({
               + Add New Application
             </button>
           </motion.div>
-        ) : (
+        ) : viewMode === "list" ? (
           <div className={`applications-table ${showForm ? "blurred" : ""}`}>
             <table>
               <thead>
@@ -365,6 +407,52 @@ export default function Applied({
                 <p>Try a different search term or filter.</p>
               </motion.div>
             )}
+          </div>
+        ) : (
+          <div className={`kanban-board ${showForm ? "blurred" : ""}`}>
+            {kanbanColumns.map((col) => {
+              const columnApps = filteredApplications.filter(
+                (app) => app.status === col.status,
+              );
+              return (
+                <div
+                  key={col.status}
+                  className="kanban-column"
+                  onDragOver={handleDragOver}
+                  onDrop={(e) => handleDrop(e, col.status)}
+                >
+                  <div className="kanban-column-header">
+                    <span
+                      className="kanban-column-dot"
+                      style={{ background: col.color }}
+                    ></span>
+                    <span>{col.label}</span>
+                    <span className="kanban-column-count">
+                      {columnApps.length}
+                    </span>
+                  </div>
+                  <div className="kanban-cards">
+                    {columnApps.map((app) => (
+                      <motion.div
+                        key={app.id}
+                        className="kanban-card"
+                        draggable
+                        onDragStart={(e) => handleDragStart(e, app.id)}
+                        initial={{ opacity: 0, y: 8 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.2 }}
+                      >
+                        <span className="kanban-card-company">
+                          {app.company}
+                        </span>
+                        <span className="kanban-card-role">{app.role}</span>
+                        <span className="kanban-card-date">{app.data}</span>
+                      </motion.div>
+                    ))}
+                  </div>
+                </div>
+              );
+            })}
           </div>
         )}
       </div>
