@@ -230,6 +230,61 @@ tbody tr:hover .delete-btn {
   opacity: 1;
 }
 
+.search-filter-bar {
+  display: flex;
+  gap: 12px;
+  margin-top: 20px;
+  align-items: center;
+}
+
+.search-input-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+  background-color: #141c2e;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  padding: 8px 12px;
+  color: #64748b;
+}
+
+.search-input-wrapper input {
+  background: transparent;
+  border: none;
+  outline: none;
+  color: #e2e8f0;
+  font-family: Inter, sans-serif;
+  font-size: 14px;
+  width: 100%;
+}
+
+.search-input-wrapper input::placeholder {
+  color: #64748b;
+}
+
+.search-input-wrapper:focus-within {
+  border-color: #4f8ef7;
+  box-shadow: 0 0 0 3px rgba(79, 142, 247, 0.15);
+}
+
+.filter-select {
+  background-color: #141c2e;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  padding: 8px 12px;
+  color: #e2e8f0;
+  font-family: Inter, sans-serif;
+  font-size: 14px;
+  cursor: pointer;
+  outline: none;
+}
+
+.filter-select:focus {
+  border-color: #4f8ef7;
+  box-shadow: 0 0 0 3px rgba(79, 142, 247, 0.15);
+}
+
 .empty-state {
   display: flex;
   flex-direction: column;
@@ -342,5 +397,15 @@ tbody tr:hover .delete-btn {
 
   .application .delete-btn {
     opacity: 1;
+  }
+
+  .search-filter-bar {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .filter-select {
+    width: 100%;
+    box-sizing: border-box;
   }
 }

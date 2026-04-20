@@ -2,7 +2,7 @@ import React from "react";
 import "./Applied.css";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ClipboardList } from "lucide-react";
+import { ClipboardList, Search } from "lucide-react";
 
 export default function Applied({
   applications,
@@ -20,6 +20,17 @@ export default function Applied({
   });
   const [errors, setErrors] = useState({});
   const [statusOpen, setStatusOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [filterStatus, setFilterStatus] = useState("all");
+
+  const filteredApplications = applications.filter((app) => {
+    const matchesStatus =
+      filterStatus === "all" || app.status === filterStatus;
+    const matchesSearch =
+      app.company.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      app.role.toLowerCase().includes(searchQuery.toLowerCase());
+    return matchesStatus && matchesSearch;
+  });
 
   const statusOptions = [
     { value: "applied", label: "Applied" },
@@ -230,6 +241,30 @@ export default function Applied({
           )}
         </AnimatePresence>
 
+        {applications.length > 0 && (
+          <div className={`search-filter-bar ${showForm ? "blurred" : ""}`}>
+            <div className="search-input-wrapper">
+              <Search size={16} />
+              <input
+                type="text"
+                placeholder="Search by company or role..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
+            </div>
+            <select
+              className="filter-select"
+              value={filterStatus}
+              onChange={(e) => setFilterStatus(e.target.value)}
+            >
+              <option value="all">All</option>
+              <option value="applied">Applied</option>
+              <option value="interview">Interview</option>
+              <option value="rejected">Rejected</option>
+            </select>
+          </div>
+        )}
+
         {applications.length === 0 ? (
           <motion.div
             className={`empty-state ${showForm ? "blurred" : ""}`}
@@ -258,7 +293,7 @@ export default function Applied({
                 </tr>
               </thead>
               <tbody>
-                {applications.map((application) => (
+                {filteredApplications.map((application) => (
                   <tr key={application.id}>
                     <td data-label="Company">{application.company}</td>
                     <td data-label="Role">{application.role}</td>
@@ -291,6 +326,18 @@ export default function Applied({
                 ))}
               </tbody>
             </table>
+            {filteredApplications.length === 0 && (
+              <motion.div
+                className="empty-state"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3 }}
+              >
+                <Search size={40} color="#64748b" />
+                <h2>No results found</h2>
+                <p>Try a different search term or filter.</p>
+              </motion.div>
+            )}
           </div>
         )}
       </div>
