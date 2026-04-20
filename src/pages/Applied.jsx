@@ -2,7 +2,7 @@ import React from "react";
 import "./Applied.css";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ClipboardList, Search, Download, List, LayoutGrid } from "lucide-react";
+import { ClipboardList, Search, Download, List, LayoutGrid, Plus } from "lucide-react";
 
 export default function Applied({
   applications,
@@ -22,7 +22,9 @@ export default function Applied({
   const [statusOpen, setStatusOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [filterStatus, setFilterStatus] = useState("all");
-  const [viewMode, setViewMode] = useState("list");
+  const [viewMode, setViewMode] = useState(() => {
+    return localStorage.getItem("appliedViewMode") || "list";
+  });
   const [draggedId, setDraggedId] = useState(null);
 
   const filteredApplications = applications.filter((app) => {
@@ -38,6 +40,11 @@ export default function Applied({
     { value: "applied", label: "Applied" },
     { value: "interview", label: "Interview" },
   ];
+
+  function handleViewModeChange(mode) {
+    setViewMode(mode);
+    localStorage.setItem("appliedViewMode", mode);
+  }
 
   function handleAddBtn() {
     setShowForm(true);
@@ -151,33 +158,40 @@ export default function Applied({
 
   return (
     <motion.div
-      className="home"
+      className="application"
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4, ease: "easeOut" }}
     >
-      <div className="application">
+      <div>
         <div className={`application-header ${showForm ? "blurred" : ""}`}>
           <h1>My Applications</h1>
           {applications.length > 0 && (
-            <button className="add-btn" onClick={handleAddBtn}>
-              + Add New Application
-            </button>
-          )}
-          {applications.length > 0 && (
-            <div className="view-toggle">
-              <button
-                className={`view-toggle-btn ${viewMode === "list" ? "active" : ""}`}
-                onClick={() => setViewMode("list")}
+            <div className="header-controls">
+              <select
+                className="filter-select"
+                value={filterStatus}
+                onChange={(e) => setFilterStatus(e.target.value)}
               >
-                <List size={18} />
-              </button>
-              <button
-                className={`view-toggle-btn ${viewMode === "kanban" ? "active" : ""}`}
-                onClick={() => setViewMode("kanban")}
-              >
-                <LayoutGrid size={18} />
-              </button>
+                <option value="all">All</option>
+                <option value="applied">Applied</option>
+                <option value="interview">Interview</option>
+                <option value="rejected">Rejected</option>
+              </select>
+              <div className="view-toggle">
+                <button
+                  className={`view-toggle-btn ${viewMode === "list" ? "active" : ""}`}
+                  onClick={() => handleViewModeChange("list")}
+                >
+                  <List size={18} />
+                </button>
+                <button
+                  className={`view-toggle-btn ${viewMode === "kanban" ? "active" : ""}`}
+                  onClick={() => handleViewModeChange("kanban")}
+                >
+                  <LayoutGrid size={18} />
+                </button>
+              </div>
             </div>
           )}
         </div>
@@ -317,20 +331,14 @@ export default function Applied({
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
             </div>
+            <button className="add-btn" onClick={handleAddBtn}>
+              <Plus size={14} />
+              <span className="add-btn-label">Add Application</span>
+            </button>
             <button className="export-btn" onClick={exportToCSV}>
               <Download size={14} />
-              Export to CSV
+              <span className="export-label">Export to CSV</span>
             </button>
-            <select
-              className="filter-select"
-              value={filterStatus}
-              onChange={(e) => setFilterStatus(e.target.value)}
-            >
-              <option value="all">All</option>
-              <option value="applied">Applied</option>
-              <option value="interview">Interview</option>
-              <option value="rejected">Rejected</option>
-            </select>
           </div>
         )}
 
