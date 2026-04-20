@@ -2,7 +2,7 @@ import React from "react";
 import "./Applied.css";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ClipboardList, Search } from "lucide-react";
+import { ClipboardList, Search, Download } from "lucide-react";
 
 export default function Applied({
   applications,
@@ -98,6 +98,29 @@ export default function Applied({
 
   function handleDelete(id) {
     deleteApplication(id);
+  }
+
+  function exportToCSV() {
+    const headers = ["Company", "Role", "Date", "Status", "Notes"];
+    const rows = applications.map((app) => [
+      app.company,
+      app.role,
+      app.data,
+      app.status,
+      app.notes || "",
+    ]);
+    const csvContent = [headers, ...rows]
+      .map((row) =>
+        row.map((cell) => `"${String(cell).replace(/"/g, '""')}"`).join(","),
+      )
+      .join("\n");
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = "applications.csv";
+    link.click();
+    URL.revokeObjectURL(url);
   }
 
   return (
@@ -252,6 +275,10 @@ export default function Applied({
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
             </div>
+            <button className="export-btn" onClick={exportToCSV}>
+              <Download size={14} />
+              Export to CSV
+            </button>
             <select
               className="filter-select"
               value={filterStatus}
