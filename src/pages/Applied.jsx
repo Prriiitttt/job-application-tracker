@@ -1,6 +1,6 @@
 import React from "react";
 import "./Applied.css";
-import { useState } from "react";
+import { useState, useRef, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ClipboardList, Search, Download, List, LayoutGrid, Plus } from "lucide-react";
 
@@ -26,6 +26,9 @@ export default function Applied({
     return localStorage.getItem("appliedViewMode") || "list";
   });
   const [draggedId, setDraggedId] = useState(null);
+  const [dragOverColumn, setDragOverColumn] = useState(null);
+  const touchState = useRef({ id: null, clone: null, originColumn: null });
+  const columnRefs = useRef({});
 
   const filteredApplications = applications.filter((app) => {
     const matchesStatus =
@@ -120,9 +123,14 @@ export default function Applied({
     e.dataTransfer.effectAllowed = "move";
   }
 
-  function handleDragOver(e) {
+  function handleDragOver(e, status) {
     e.preventDefault();
     e.dataTransfer.dropEffect = "move";
+    setDragOverColumn(status);
+  }
+
+  function handleDragLeave() {
+    setDragOverColumn(null);
   }
 
   function handleDrop(e, newStatus) {
@@ -130,8 +138,62 @@ export default function Applied({
     if (draggedId) {
       updateApplication(draggedId, { status: newStatus });
       setDraggedId(null);
+      setDragOverColumn(null);
     }
   }
+
+  const handleTouchStart = useCallback((e, id) => {
+    const card = e.currentTarget;
+    const touch = e.touches[0];
+    const rect = card.getBoundingClientRect();
+    const clone = card.cloneNode(true);
+    clone.className = "kanban-card kanban-card-dragging";
+    clone.style.width = rect.width + "px";
+    clone.style.left = rect.left + "px";
+    clone.style.top = rect.top + "px";
+    document.body.appendChild(clone);
+    const app = applications.find((a) => a.id === id);
+    touchState.current = {
+      id,
+      clone,
+      originColumn: app?.status,
+      offsetX: touch.clientX - rect.left,
+      offsetY: touch.clientY - rect.top,
+    };
+    setDraggedId(id);
+  }, [applications]);
+
+  const handleTouchMove = useCallback((e) => {
+    const { clone, offsetX, offsetY } = touchState.current;
+    if (!clone) return;
+    e.preventDefault();
+    const touch = e.touches[0];
+    clone.style.left = touch.clientX - offsetX + "px";
+    clone.style.top = touch.clientY - offsetY + "px";
+    let found = null;
+    for (const [status, el] of Object.entries(columnRefs.current)) {
+      const r = el.getBoundingClientRect();
+      if (touch.clientX >= r.left && touch.clientX <= r.right &&
+          touch.clientY >= r.top && touch.clientY <= r.bottom) {
+        found = status;
+        break;
+      }
+    }
+    setDragOverColumn(found);
+  }, []);
+
+  const handleTouchEnd = useCallback(() => {
+    const { id, clone } = touchState.current;
+    if (clone) {
+      clone.remove();
+    }
+    if (id && dragOverColumn) {
+      updateApplication(id, { status: dragOverColumn });
+    }
+    touchState.current = { id: null, clone: null, originColumn: null };
+    setDraggedId(null);
+    setDragOverColumn(null);
+  }, [dragOverColumn, updateApplication]);
 
   function exportToCSV() {
     const headers = ["Company", "Role", "Date", "Status", "Notes"];
@@ -425,8 +487,10 @@ export default function Applied({
               return (
                 <div
                   key={col.status}
-                  className="kanban-column"
-                  onDragOver={handleDragOver}
+                  className={`kanban-column${dragOverColumn === col.status && draggedId ? " kanban-column-dragover" : ""}`}
+                  ref={(el) => (columnRefs.current[col.status] = el)}
+                  onDragOver={(e) => handleDragOver(e, col.status)}
+                  onDragLeave={handleDragLeave}
                   onDrop={(e) => handleDrop(e, col.status)}
                 >
                   <div className="kanban-column-header">
@@ -446,6 +510,9 @@ export default function Applied({
                         className="kanban-card"
                         draggable
                         onDragStart={(e) => handleDragStart(e, app.id)}
+                        onTouchStart={(e) => handleTouchStart(e, app.id)}
+                        onTouchMove={handleTouchMove}
+                        onTouchEnd={handleTouchEnd}
                         initial={{ opacity: 0, y: 8 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.2 }}
