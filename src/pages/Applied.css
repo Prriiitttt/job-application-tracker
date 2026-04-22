@@ -419,6 +419,89 @@ tbody tr:hover .delete-btn {
   margin-top: 4px;
 }
 
+.file-upload-area {
+  background-color: #0a0f1e;
+  border: 1px dashed rgba(79, 142, 247, 0.3);
+  border-radius: 8px;
+  padding: 14px 12px;
+  cursor: pointer;
+  transition: border-color 0.2s;
+}
+
+.file-upload-area:hover {
+  border-color: #4f8ef7;
+}
+
+.file-placeholder {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #64748b;
+  font-size: 13px;
+}
+
+.file-selected {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #4f8ef7;
+  font-size: 13px;
+}
+
+.file-name {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.file-remove-btn {
+  background: transparent;
+  border: none;
+  color: #ff6b6b;
+  cursor: pointer;
+  padding: 2px;
+  display: flex;
+  align-items: center;
+}
+
+.view-resume-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: transparent;
+  border: 1px solid rgba(79, 142, 247, 0.3);
+  border-radius: 6px;
+  color: #4f8ef7;
+  font-size: 12px;
+  font-family: Inter, sans-serif;
+  padding: 4px 8px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.view-resume-btn:hover {
+  background: rgba(79, 142, 247, 0.1);
+}
+
+.kanban-resume-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: transparent;
+  border: none;
+  color: #4f8ef7;
+  font-size: 12px;
+  font-family: Inter, sans-serif;
+  padding: 0;
+  margin-top: 4px;
+  cursor: pointer;
+}
+
+.kanban-resume-btn:hover {
+  text-decoration: underline;
+}
+
 .export-btn {
   display: flex;
   align-items: center;
@@ -599,6 +682,15 @@ tbody tr:hover .delete-btn {
 
   .export-btn .export-label {
     display: none;
+  }
+
+  .view-resume-btn span {
+    display: none;
+  }
+
+  .view-resume-btn {
+    border: none;
+    padding: 2px;
   }
 
   .kanban-board {

@@ -58,7 +58,10 @@ function App() {
         .insert(newApp)
         .select()
         .single();
-      if (!error && data) setApplications((prev) => [...prev, data]);
+      if (!error && data) {
+        setApplications((prev) => [...prev, data]);
+        return data;
+      }
     },
     [session],
   );
@@ -76,14 +79,18 @@ function App() {
   }, []);
 
   const deleteApplication = useCallback(async (id) => {
+    const app = applications.find((a) => a.id === id);
     const { error } = await supabase
       .from("application")
       .delete()
       .eq("id", id);
     if (!error) {
+      if (app?.resume_url) {
+        await supabase.storage.from("resumes").remove([app.resume_url]);
+      }
       setApplications((prev) => prev.filter((app) => app.id !== id));
     }
-  }, []);
+  }, [applications]);
 
   const router = useMemo(
     () =>
@@ -105,6 +112,7 @@ function App() {
                   addApplication={addApplication}
                   updateApplication={updateApplication}
                   deleteApplication={deleteApplication}
+                  session={session}
                 />
               ),
             },

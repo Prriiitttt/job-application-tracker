@@ -1,14 +1,16 @@
 import React from "react";
 import "./Applied.css";
-import { useState, useRef, useCallback } from "react";
+import { useState, useRef, useCallback, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ClipboardList, Search, Download, List, LayoutGrid, Plus } from "lucide-react";
+import { ClipboardList, Search, Download, List, LayoutGrid, Plus, FileText, Upload, X, Loader2 } from "lucide-react";
+import { supabase } from "../lib/supabase";
 
 export default function Applied({
   applications,
   addApplication,
   updateApplication,
   deleteApplication,
+  session,
 }) {
   const [showForm, setShowForm] = useState(false);
   const [formData, setFormData] = useState({
@@ -25,6 +27,9 @@ export default function Applied({
   const [viewMode, setViewMode] = useState(() => {
     return localStorage.getItem("appliedViewMode") || "list";
   });
+  const [resumeFile, setResumeFile] = useState(null);
+  const [uploading, setUploading] = useState(false);
+  const fileInputRef = useRef(null);
   const [draggedId, setDraggedId] = useState(null);
   const [dragOverColumn, setDragOverColumn] = useState(null);
   const touchState = useRef({ id: null, clone: null, originColumn: null });
@@ -63,6 +68,8 @@ export default function Applied({
       notes: "",
     });
     setErrors({});
+    setResumeFile(null);
+    if (fileInputRef.current) fileInputRef.current.value = "";
   }
 
   function validateForm() {
@@ -73,7 +80,7 @@ export default function Applied({
     return newErrors;
   }
 
-  function handleSubmit(e) {
+  async function handleSubmit(e) {
     e.preventDefault();
     const foundErrors = validateForm();
 
@@ -83,8 +90,22 @@ export default function Applied({
     }
 
     setErrors({});
+    setUploading(true);
 
-    addApplication(formData);
+    const created = await addApplication(formData);
+    if (created && resumeFile) {
+      const filePath = `${session.user.id}/${created.id}-${resumeFile.name}`;
+      const { error: uploadError } = await supabase.storage
+        .from("resumes")
+        .upload(filePath, resumeFile);
+      if (!uploadError) {
+        await updateApplication(created.id, { resume_url: filePath });
+      }
+    }
+
+    setUploading(false);
+    setResumeFile(null);
+    if (fileInputRef.current) fileInputRef.current.value = "";
     setFormData({
       company: "",
       role: "",
@@ -93,6 +114,35 @@ export default function Applied({
       notes: "",
     });
     setShowForm(false);
+  }
+
+  function handleResumeChange(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+    if (file.size > 5 * 1024 * 1024) {
+      setErrors((prev) => ({ ...prev, resume: "File must be under 5MB" }));
+      e.target.value = "";
+      return;
+    }
+    setErrors((prev) => {
+      const { resume, ...rest } = prev;
+      return rest;
+    });
+    setResumeFile(file);
+  }
+
+  async function handleViewResume(resumeUrl) {
+    const { data, error } = await supabase.storage
+      .from("resumes")
+      .createSignedUrl(resumeUrl, 60);
+    if (!error && data?.signedUrl) {
+      window.open(data.signedUrl, "_blank");
+    }
+  }
+
+  async function handleRemoveResume(id, resumeUrl) {
+    await supabase.storage.from("resumes").remove([resumeUrl]);
+    await updateApplication(id, { resume_url: null });
   }
 
   function handleStatusChange(id, newStatus) {
@@ -194,6 +244,16 @@ export default function Applied({
     setDraggedId(null);
     setDragOverColumn(null);
   }, [dragOverColumn, updateApplication]);
+
+  useEffect(() => {
+    if (!draggedId) return;
+    document.addEventListener("touchmove", handleTouchMove, { passive: false });
+    document.addEventListener("touchend", handleTouchEnd);
+    return () => {
+      document.removeEventListener("touchmove", handleTouchMove);
+      document.removeEventListener("touchend", handleTouchEnd);
+    };
+  }, [draggedId, handleTouchMove, handleTouchEnd]);
 
   function exportToCSV() {
     const headers = ["Company", "Role", "Date", "Status", "Notes"];
@@ -372,7 +432,52 @@ export default function Applied({
                       }
                     />
                   </div>
-                  <input type="submit" value="Submit" />
+
+                  <div className="form-field">
+                    <label>Resume (optional)</label>
+                    <div
+                      className="file-upload-area"
+                      onClick={() => fileInputRef.current?.click()}
+                    >
+                      <input
+                        ref={fileInputRef}
+                        type="file"
+                        accept=".pdf,.doc,.docx"
+                        onChange={handleResumeChange}
+                        hidden
+                      />
+                      {resumeFile ? (
+                        <div className="file-selected">
+                          <FileText size={16} />
+                          <span className="file-name">{resumeFile.name}</span>
+                          <button
+                            type="button"
+                            className="file-remove-btn"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setResumeFile(null);
+                              fileInputRef.current.value = "";
+                            }}
+                          >
+                            <X size={14} />
+                          </button>
+                        </div>
+                      ) : (
+                        <div className="file-placeholder">
+                          <Upload size={16} />
+                          <span>Click to upload PDF, DOC, or DOCX</span>
+                        </div>
+                      )}
+                    </div>
+                    {errors.resume && (
+                      <span className="error-msg">{errors.resume}</span>
+                    )}
+                  </div>
+                  <input
+                    type="submit"
+                    value={uploading ? "Uploading..." : "Submit"}
+                    disabled={uploading}
+                  />
                   <button type="button" onClick={cancelForm}>
                     Cancel
                   </button>
@@ -428,6 +533,7 @@ export default function Applied({
                   <th>Date</th>
                   <th>Status</th>
                   <th>Notes</th>
+                  <th>Resume</th>
                   <th></th>
                 </tr>
               </thead>
@@ -453,6 +559,19 @@ export default function Applied({
                       </select>
                     </td>
                     <td data-label="Notes">{application.notes}</td>
+                    <td data-label="Resume">
+                      {application.resume_url && (
+                        <button
+                          className="view-resume-btn"
+                          onClick={() =>
+                            handleViewResume(application.resume_url)
+                          }
+                        >
+                          <FileText size={14} />
+                          <span>View</span>
+                        </button>
+                      )}
+                    </td>
                     <td data-label="">
                       <button
                         className="delete-btn"
@@ -511,8 +630,6 @@ export default function Applied({
                         draggable
                         onDragStart={(e) => handleDragStart(e, app.id)}
                         onTouchStart={(e) => handleTouchStart(e, app.id)}
-                        onTouchMove={handleTouchMove}
-                        onTouchEnd={handleTouchEnd}
                         initial={{ opacity: 0, y: 8 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.2 }}
@@ -522,6 +639,18 @@ export default function Applied({
                         </span>
                         <span className="kanban-card-role">{app.role}</span>
                         <span className="kanban-card-date">{app.data}</span>
+                        {app.resume_url && (
+                          <button
+                            className="kanban-resume-btn"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleViewResume(app.resume_url);
+                            }}
+                          >
+                            <FileText size={12} />
+                            <span>Resume</span>
+                          </button>
+                        )}
                       </motion.div>
                     ))}
                   </div>
