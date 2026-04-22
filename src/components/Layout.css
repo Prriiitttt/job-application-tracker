@@ -30,13 +30,23 @@ nav > svg {
 }
 
 a > svg {
-  transition: 0.7s ease;
+  transition: background-color 0.2s ease, color 0.2s ease;
   color: #64748b;
   background-color: rgba(255, 255, 255, 0.05);
   border-radius: 4px;
   height: 30px;
   width: 30px;
   padding: 6px;
+}
+
+@media (hover: hover) {
+  nav a:not(.is-active):hover > svg {
+    background-color: rgba(255, 255, 255, 0.08);
+  }
+}
+
+nav a:not(.is-active):active > svg {
+  background-color: rgba(255, 255, 255, 0.08);
 }
 
 .is-active svg {
