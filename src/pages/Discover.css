@@ -1,0 +1,131 @@
+.discover-page {
+  padding: 12px;
+  width: 80vw;
+}
+
+.discover-page h1 {
+  font-weight: 600;
+  margin-bottom: 20px;
+}
+
+.discover-search {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background-color: #141c2e;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  padding: 10px 14px;
+  color: #64748b;
+  margin-bottom: 20px;
+}
+
+.discover-search input {
+  background: transparent;
+  border: none;
+  outline: none;
+  color: #e2e8f0;
+  font-family: Inter, sans-serif;
+  font-size: 14px;
+  width: 100%;
+}
+
+.discover-search input::placeholder {
+  color: #64748b;
+}
+
+.discover-search:focus-within {
+  border-color: #4f8ef7;
+  box-shadow: 0 0 0 3px rgba(79, 142, 247, 0.15);
+}
+
+.discover-loading {
+  display: flex;
+  justify-content: center;
+  padding: 60px 0;
+}
+
+.discover-empty {
+  text-align: center;
+  padding: 60px 0;
+  color: #64748b;
+}
+
+.discover-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.discover-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: #141c2e;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+  padding: 14px 16px;
+  transition: border-color 0.2s;
+}
+
+.discover-card:hover {
+  border-color: rgba(255, 255, 255, 0.15);
+}
+
+.discover-card-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  flex: 1;
+  min-width: 0;
+}
+
+.discover-avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background-color: rgba(79, 142, 247, 0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #4f8ef7;
+  flex-shrink: 0;
+  overflow: hidden;
+}
+
+.discover-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.discover-name {
+  display: block;
+  color: #f1f5f9;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.discover-username {
+  display: block;
+  color: #64748b;
+  font-size: 13px;
+}
+
+.discover-card-action .connect-btn {
+  font-size: 13px;
+  padding: 6px 12px;
+}
+
+@media (max-width: 430px) {
+  .discover-page {
+    width: 100%;
+    padding: 24px;
+    box-sizing: border-box;
+  }
+
+  .discover-page h1 {
+    font-size: 20px;
+  }
+}

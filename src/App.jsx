@@ -9,6 +9,9 @@ import Analytics from "./pages/Analytics";
 import Error from "./pages/Error";
 import Login from "./pages/Login";
 import Loading from "./components/Loading";
+import Profile from "./pages/Profile";
+import Discover from "./pages/Discover";
+import Connections from "./pages/Connections";
 
 function App() {
   const [session, setSession] = useState(null);
@@ -124,6 +127,22 @@ function App() {
                   session={session}
                 />
               ),
+            },
+            {
+              path: "profile/me",
+              element: <Profile session={session} isOwn={true} />,
+            },
+            {
+              path: "profile/:username",
+              element: <Profile session={session} />,
+            },
+            {
+              path: "discover",
+              element: <Discover session={session} />,
+            },
+            {
+              path: "connections",
+              element: <Connections session={session} />,
             },
           ],
         },

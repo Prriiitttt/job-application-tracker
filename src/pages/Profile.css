@@ -1,0 +1,272 @@
+.profile-page {
+  padding: 12px;
+  width: 80vw;
+}
+
+.profile-page-title {
+  font-weight: 600;
+  padding: 0 8px;
+}
+
+.profile-loading {
+  display: flex;
+  justify-content: center;
+  padding: 80px 0;
+}
+
+.spin {
+  animation: profile-spin 0.7s linear infinite;
+}
+
+@keyframes profile-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.profile-card {
+  background-color: #141c2e;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 24px;
+}
+
+.profile-header {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+}
+
+.profile-avatar {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background-color: rgba(79, 142, 247, 0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #4f8ef7;
+  flex-shrink: 0;
+  overflow: hidden;
+}
+
+.profile-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.profile-info h1 {
+  font-weight: 600;
+  color: #f1f5f9;
+  margin: 0;
+}
+
+.profile-username {
+  color: #64748b;
+  font-size: 14px;
+  margin: 4px 0 0;
+}
+
+.profile-bio {
+  color: #94a3b8;
+  font-size: 14px;
+  margin: 8px 0 0;
+}
+
+.profile-connection {
+  margin-top: 16px;
+}
+
+.connect-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.connect-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  font-family: Inter, sans-serif;
+  cursor: pointer;
+  border: none;
+  background-color: #4f8ef7;
+  color: white;
+  transition: opacity 0.2s;
+}
+
+.connect-btn:hover {
+  opacity: 0.85;
+}
+
+.connect-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.connect-btn.pending {
+  background-color: #3d4457;
+}
+
+.connect-btn.connected {
+  background-color: rgba(0, 229, 160, 0.15);
+  color: #00e5a0;
+}
+
+.connect-btn.accept {
+  background-color: rgba(0, 229, 160, 0.15);
+  color: #00e5a0;
+}
+
+.connect-btn.decline {
+  background-color: rgba(255, 107, 107, 0.15);
+  color: #ff6b6b;
+}
+
+.profile-private {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background-color: #141c2e;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 20px 24px;
+  margin-top: 20px;
+  color: #64748b;
+  font-size: 14px;
+}
+
+.profile-private p {
+  margin: 0;
+}
+
+.profile-stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.stat-card {
+  background-color: #141c2e;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.stat-value {
+  font-size: 28px;
+  font-weight: 700;
+  color: #f1f5f9;
+}
+
+.stat-applied {
+  color: #4f8ef7;
+}
+
+.stat-interview {
+  color: #00e5a0;
+}
+
+.stat-rejected {
+  color: #ff6b6b;
+}
+
+.stat-label {
+  font-size: 12px;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.profile-edit {
+  background-color: #141c2e;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 24px;
+  margin-top: 20px;
+}
+
+.profile-edit h2 {
+  font-weight: 600;
+  color: #f1f5f9;
+  margin: 0 0 16px;
+}
+
+.edit-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 12px;
+}
+
+.edit-field label {
+  color: #64748b;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+}
+
+.edit-field input,
+.edit-field textarea {
+  background-color: #0a0f1e;
+  color: #e2e8f0;
+  border: 1px solid rgba(79, 142, 247, 0.2);
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-family: Inter, sans-serif;
+  font-size: 14px;
+  resize: vertical;
+}
+
+.edit-field input:focus,
+.edit-field textarea:focus {
+  border: 1px solid #4f8ef7;
+  box-shadow: 0 0 0 3px rgba(79, 142, 247, 0.15);
+  outline: none;
+}
+
+.save-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background-color: #4f8ef7;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 20px;
+  font-family: Inter, sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.save-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+@media (max-width: 430px) {
+  .profile-page {
+    width: 100%;
+    padding: 24px;
+    box-sizing: border-box;
+  }
+
+  .profile-header {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .profile-stats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}

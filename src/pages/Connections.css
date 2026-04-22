@@ -1,0 +1,172 @@
+.connections-page {
+  padding: 12px;
+  width: 80vw;
+}
+
+.connections-page h1 {
+  font-weight: 600;
+  margin-bottom: 24px;
+}
+
+.connections-loading {
+  display: flex;
+  justify-content: center;
+  padding: 80px 0;
+}
+
+.connections-section {
+  margin-bottom: 32px;
+}
+
+.connections-section h2 {
+  font-size: 16px;
+  font-weight: 600;
+  color: #94a3b8;
+  margin-bottom: 12px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.connections-empty {
+  color: #64748b;
+  font-size: 14px;
+  padding: 16px 0;
+}
+
+.connections-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 40px 0;
+  text-align: center;
+  color: #64748b;
+  font-size: 14px;
+}
+
+.discover-cta-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background-color: #4f8ef7;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 20px;
+  font-family: Inter, sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.discover-cta-btn:hover {
+  opacity: 0.85;
+}
+
+.connections-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.connection-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: #141c2e;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+  padding: 14px 16px;
+  transition: border-color 0.2s;
+}
+
+.connection-card.clickable {
+  cursor: pointer;
+}
+
+.connection-card.clickable:hover {
+  border-color: rgba(255, 255, 255, 0.15);
+}
+
+.connection-card-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  flex: 1;
+  min-width: 0;
+}
+
+.connection-avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background-color: rgba(79, 142, 247, 0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #4f8ef7;
+  flex-shrink: 0;
+  overflow: hidden;
+}
+
+.connection-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.connection-name {
+  display: block;
+  color: #f1f5f9;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.connection-username {
+  display: block;
+  color: #64748b;
+  font-size: 13px;
+}
+
+.connection-card-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.connected-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: #00e5a0;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+@media (max-width: 430px) {
+  .connections-page {
+    width: 100%;
+    padding: 24px;
+    box-sizing: border-box;
+  }
+
+  .connections-page h1 {
+    font-size: 20px;
+  }
+
+  .connection-card {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .connection-card-actions {
+    width: 100%;
+  }
+
+  .connection-card-actions .connect-btn {
+    flex: 1;
+    justify-content: center;
+  }
+}
