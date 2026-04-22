@@ -77,6 +77,8 @@ export default function Applied({
     if (!formData.company) newErrors.company = "Company is required";
     if (!formData.role) newErrors.role = "Role is required";
     if (!formData.data) newErrors.data = "Date is required";
+    else if (formData.data > new Date().toISOString().split("T")[0])
+      newErrors.data = "Date cannot be in the future";
     return newErrors;
   }
 
@@ -326,6 +328,7 @@ export default function Applied({
               transition={{ duration: 0.25, ease: "easeOut" }}
             >
               <div className="application-form">
+                <fieldset disabled={uploading} style={{ border: "none", padding: 0, margin: 0 }}>
                 <form onSubmit={handleSubmit}>
                   <h2>Add Application Form</h2>
 
@@ -411,6 +414,7 @@ export default function Applied({
                       id="data"
                       name="data"
                       value={formData.data}
+                      max={new Date().toISOString().split("T")[0]}
                       onChange={(e) =>
                         setFormData({ ...formData, data: e.target.value })
                       }
@@ -447,21 +451,28 @@ export default function Applied({
                         hidden
                       />
                       {resumeFile ? (
-                        <div className="file-selected">
-                          <FileText size={16} />
-                          <span className="file-name">{resumeFile.name}</span>
-                          <button
-                            type="button"
-                            className="file-remove-btn"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              setResumeFile(null);
-                              fileInputRef.current.value = "";
-                            }}
-                          >
-                            <X size={14} />
-                          </button>
-                        </div>
+                        uploading ? (
+                          <div className="file-uploading">
+                            <Loader2 size={16} className="form-spinner" />
+                            <span>Uploading resume...</span>
+                          </div>
+                        ) : (
+                          <div className="file-selected">
+                            <FileText size={16} />
+                            <span className="file-name">{resumeFile.name}</span>
+                            <button
+                              type="button"
+                              className="file-remove-btn"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setResumeFile(null);
+                                fileInputRef.current.value = "";
+                              }}
+                            >
+                              <X size={14} />
+                            </button>
+                          </div>
+                        )
                       ) : (
                         <div className="file-placeholder">
                           <Upload size={16} />
@@ -473,15 +484,15 @@ export default function Applied({
                       <span className="error-msg">{errors.resume}</span>
                     )}
                   </div>
-                  <input
-                    type="submit"
-                    value={uploading ? "Uploading..." : "Submit"}
-                    disabled={uploading}
-                  />
-                  <button type="button" onClick={cancelForm}>
+                  <button type="submit" className="submit-btn" disabled={uploading}>
+                    {uploading && <Loader2 size={16} className="form-spinner" />}
+                    {uploading ? "Saving..." : "Submit"}
+                  </button>
+                  <button type="button" onClick={cancelForm} disabled={uploading}>
                     Cancel
                   </button>
                 </form>
+                </fieldset>
               </div>
             </motion.div>
           )}

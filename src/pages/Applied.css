@@ -159,13 +159,44 @@
   color: #4f8ef7;
 }
 
-.application-form input[type="submit"] {
+.submit-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
   background-color: #4f8ef7;
   color: white;
   font-weight: 600;
   cursor: pointer;
   border: none;
   margin-top: 8px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  font-family: Inter, sans-serif;
+  font-size: 14px;
+}
+
+.submit-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.form-spinner {
+  animation: form-spin 0.7s linear infinite;
+}
+
+@keyframes form-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.file-uploading {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #4f8ef7;
+  font-size: 13px;
 }
 
 .application-form button[type="button"] {
