@@ -67,17 +67,17 @@ export default function Profile({ session, isOwn }) {
 
     // Only fetch stats if own profile or connected
     if (isOwnCheck || (conn && conn.status === "accepted")) {
-      const { data: apps } = await supabase
-        .from("application")
-        .select("status")
-        .eq("user_id", profileData.id);
+      const { data: statsRows } = await supabase.rpc("get_profile_application_stats", {
+        target_user_id: profileData.id,
+      });
 
-      if (apps) {
+      const row = Array.isArray(statsRows) ? statsRows[0] : statsRows;
+      if (row) {
         setStats({
-          total: apps.length,
-          applied: apps.filter((a) => a.status === "applied").length,
-          interview: apps.filter((a) => a.status === "interview").length,
-          rejected: apps.filter((a) => a.status === "rejected").length,
+          total: Number(row.total) || 0,
+          applied: Number(row.applied) || 0,
+          interview: Number(row.interview) || 0,
+          rejected: Number(row.rejected) || 0,
         });
       }
     }
