@@ -108,22 +108,53 @@
   opacity: 0.85;
 }
 
-.google-btn {
+.oauth-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.oauth-spinner {
+  animation: spin 0.7s linear infinite;
+}
+
+.oauth-loading {
+  cursor: progress;
+}
+
+.oauth-loading * {
+  cursor: progress;
+}
+
+.oauth-loading .oauth-btn:disabled,
+.oauth-loading .login-card button:disabled {
+  cursor: progress;
+}
+
+@media (max-width: 430px) {
+  .oauth-loading,
+  .oauth-loading *,
+  .oauth-loading .oauth-btn:disabled,
+  .oauth-loading .login-card button:disabled {
+    cursor: default;
+  }
+}
+
+.login-card .google-btn {
   background: #ffffff;
   color: #1f1f1f;
 }
 
-.google-btn:hover {
+.login-card .google-btn:hover {
   background: #f0f0f0;
 }
 
-.github-btn {
+.login-card .github-btn {
   background: #24292e;
   color: #ffffff;
   border: 1px solid rgba(255, 255, 255, 0.15);
 }
 
-.github-btn:hover {
+.login-card .github-btn:hover {
   background: #2f363d;
 }
 
@@ -163,7 +194,7 @@
   padding: 12px;
   border-radius: 8px;
   border: none;
-  background: #3d4457;
+  background: #4e8ef7;
   color: white;
   font-size: 14px;
   font-weight: 600;
