@@ -82,6 +82,68 @@
   text-align: center;
 }
 
+.oauth-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 0;
+}
+
+.oauth-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 12px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  font-family: Inter, sans-serif;
+  cursor: pointer;
+  transition: opacity 0.2s;
+  border: none;
+}
+
+.oauth-btn:hover {
+  opacity: 0.85;
+}
+
+.google-btn {
+  background: #ffffff;
+  color: #1f1f1f;
+}
+
+.google-btn:hover {
+  background: #f0f0f0;
+}
+
+.github-btn {
+  background: #24292e;
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.github-btn:hover {
+  background: #2f363d;
+}
+
+.oauth-divider {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin: 20px 0;
+  color: #64748b;
+  font-size: 13px;
+}
+
+.oauth-divider::before,
+.oauth-divider::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.1);
+}
+
 .login-card form {
   display: flex;
   flex-direction: column;
@@ -101,7 +163,7 @@
   padding: 12px;
   border-radius: 8px;
   border: none;
-  background: #4f8ef7;
+  background: #3d4457;
   color: white;
   font-size: 14px;
   font-weight: 600;
