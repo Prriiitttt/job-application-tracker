@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { User, UserPlus, Check, X, Clock, Loader2, Lock } from "lucide-react";
+import { User, UserPlus, Check, X, Clock, Loader2, Lock, MessageCircle } from "lucide-react";
 import { supabase } from "../lib/supabase";
 import "./Profile.css";
 
@@ -161,7 +161,17 @@ export default function Profile({ session, isOwn }) {
       );
     }
     if (connection.status === "accepted") {
-      return <button className="connect-btn connected" disabled><Check size={16} /> Connected</button>;
+      return (
+        <div className="connect-actions">
+          <button className="connect-btn connected" disabled><Check size={16} /> Connected</button>
+          <button
+            className="connect-btn message"
+            onClick={() => navigate("/connections", { state: { openChatWith: profile.id } })}
+          >
+            <MessageCircle size={16} /> Message
+          </button>
+        </div>
+      );
     }
   }
 

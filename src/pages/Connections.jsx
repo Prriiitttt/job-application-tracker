@@ -1,18 +1,70 @@
-import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import { motion } from "framer-motion";
-import { Check, User, Loader2, Users, Compass } from "lucide-react";
+import React, { useState, useEffect, useRef } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
+import { AnimatePresence, motion } from "framer-motion";
+import { User, Loader2, Users, Compass, MessageCircle } from "lucide-react";
 import { supabase } from "../lib/supabase";
+import ChatView from "../components/ChatView";
 import "./Connections.css";
 
 export default function Connections({ session }) {
   const navigate = useNavigate();
+  const location = useLocation();
   const [accepted, setAccepted] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [activeChatUser, setActiveChatUser] = useState(null);
+  const [unreadMap, setUnreadMap] = useState({});
+  const didProcessOpenChatRef = useRef(false);
 
   useEffect(() => {
     loadConnections();
+    loadUnread();
   }, [session]);
+
+  useEffect(() => {
+    const channel = supabase
+      .channel(`user-messages:${session.user.id}`)
+      .on(
+        "postgres_changes",
+        { event: "INSERT", schema: "public", table: "messages" },
+        (payload) => {
+          if (payload.new.sender_id !== session.user.id) {
+            loadUnread();
+          }
+        }
+      )
+      .subscribe();
+    return () => { supabase.removeChannel(channel); };
+  }, [session.user.id]);
+
+  useEffect(() => {
+    if (didProcessOpenChatRef.current) return;
+    const target = location.state?.openChatWith;
+    if (!target || loading) return;
+    const conn = accepted.find((c) => {
+      const otherId = c.requester_id === session.user.id ? c.receiver_id : c.requester_id;
+      return otherId === target;
+    });
+    if (conn?.otherUser) {
+      setActiveChatUser(conn.otherUser);
+      didProcessOpenChatRef.current = true;
+    }
+  }, [loading, accepted, location.state, session.user.id]);
+
+  async function loadUnread() {
+    const { data, error } = await supabase.rpc("get_unread_conversations");
+    if (error) {
+      console.warn("Could not load unread state:", error.message);
+      return;
+    }
+    if (!data) return;
+    const map = {};
+    data.forEach((r) => { map[r.other_user_id] = r.has_unread; });
+    setUnreadMap(map);
+  }
+
+  function handleMarkedRead(userId) {
+    setUnreadMap((prev) => ({ ...prev, [userId]: false }));
+  }
 
   async function loadConnections() {
     setLoading(true);
@@ -65,50 +117,80 @@ export default function Connections({ session }) {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4, ease: "easeOut" }}
     >
-      <h1>Connections</h1>
-
-      <section className="connections-section">
-        <h2>My Connections</h2>
-        {accepted.length === 0 ? (
-          <div className="connections-empty-state">
-            <Users size={40} color="#64748b" />
-            <p>No connections yet.</p>
-            <button className="discover-cta-btn" onClick={() => navigate("/discover")}>
-              <Compass size={16} />
-              Discover People
-            </button>
-          </div>
-        ) : (
-          <div className="connections-list">
-            {accepted.map((conn) => {
-              const other = getOtherUser(conn);
-              if (!other) return null;
-              return (
-                <div
-                  key={conn.id}
-                  className="connection-card clickable"
-                  onClick={() => navigate(`/profile/${other.username}`)}
-                >
-                  <div className="connection-card-info">
-                    <div className="connection-avatar">
-                      {other.avatar_url ? (
-                        <img src={other.avatar_url} alt={other.full_name} />
-                      ) : (
-                        <User size={24} />
-                      )}
+      <div className={`connections-layout ${activeChatUser ? "with-chat" : ""}`}>
+        <section className="connections-section connections-main">
+          <h1>Connections</h1>
+          <h2>My Connections</h2>
+          {accepted.length === 0 ? (
+            <div className="connections-empty-state">
+              <Users size={40} color="#64748b" />
+              <p>No connections yet.</p>
+              <button className="discover-cta-btn" onClick={() => navigate("/discover")}>
+                <Compass size={16} />
+                Discover People
+              </button>
+            </div>
+          ) : (
+            <div className="connections-list">
+              {accepted.map((conn) => {
+                const other = getOtherUser(conn);
+                if (!other) return null;
+                const isActive = activeChatUser?.id === other.id;
+                return (
+                  <div
+                    key={conn.id}
+                    className={`connection-card ${isActive ? "is-active" : ""}`}
+                  >
+                    <div
+                      className="connection-card-info clickable"
+                      onClick={() => navigate(`/profile/${other.username}`)}
+                    >
+                      <div className="connection-avatar">
+                        {other.avatar_url ? (
+                          <img src={other.avatar_url} alt={other.full_name} />
+                        ) : (
+                          <User size={24} />
+                        )}
+                      </div>
+                      <div>
+                        <span className="connection-name">
+                          {other.full_name || other.username}
+                          {unreadMap[other.id] && (
+                            <span className="connection-unread-dot" aria-label="Unread messages" />
+                          )}
+                        </span>
+                        <span className="connection-username">@{other.username}</span>
+                      </div>
                     </div>
-                    <div>
-                      <span className="connection-name">{other.full_name || other.username}</span>
-                      <span className="connection-username">@{other.username}</span>
+                    <div className="connection-card-actions">
+                      <button
+                        className="connection-message-btn"
+                        onClick={() => setActiveChatUser(other)}
+                        aria-label={`Message ${other.full_name || other.username}`}
+                      >
+                        <MessageCircle size={16} />
+                        Message
+                      </button>
                     </div>
                   </div>
-                  <span className="connected-badge"><Check size={14} /> Connected</span>
-                </div>
-              );
-            })}
-          </div>
-        )}
-      </section>
+                );
+              })}
+            </div>
+          )}
+        </section>
+
+        <AnimatePresence>
+          {activeChatUser && (
+            <ChatView
+              key={activeChatUser.id}
+              session={session}
+              otherUser={activeChatUser}
+              onClose={() => setActiveChatUser(null)}
+              onMarkedRead={handleMarkedRead}
+            />
+          )}
+        </AnimatePresence>
+      </div>
     </motion.div>
   );
 }

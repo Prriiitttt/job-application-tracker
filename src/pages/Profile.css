@@ -127,6 +127,18 @@
   color: #ff6b6b;
 }
 
+.connect-btn.message {
+  background-color: rgba(79, 142, 247, 0.1);
+  color: #4f8ef7;
+  border: 1px solid rgba(79, 142, 247, 0.25);
+}
+
+.connect-btn.message:hover {
+  background-color: rgba(79, 142, 247, 0.18);
+  border-color: rgba(79, 142, 247, 0.4);
+  opacity: 1;
+}
+
 .profile-private {
   display: flex;
   align-items: center;

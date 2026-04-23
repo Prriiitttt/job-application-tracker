@@ -8,6 +8,21 @@
   margin-bottom: 24px;
 }
 
+.connections-layout {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+}
+
+.connections-main {
+  flex: 1;
+  min-width: 0;
+}
+
+.connections-layout.with-chat .connections-main {
+  flex: 0 0 340px;
+}
+
 .connections-loading {
   display: flex;
   justify-content: center;
@@ -81,22 +96,20 @@
   transition: border-color 0.2s;
 }
 
-.connection-card.clickable {
-  cursor: pointer;
-}
-
-.connection-card.clickable:hover {
+.connection-card.is-active {
   border-color: rgba(255, 255, 255, 0.15);
+  background-color: #1a2238;
 }
 
 .connection-card-info {
   display: flex;
   align-items: center;
   gap: 12px;
-  cursor: pointer;
   flex: 1;
   min-width: 0;
 }
+
+.connection-card-info.clickable { cursor: pointer; }
 
 .connection-avatar {
   width: 44px;
@@ -118,10 +131,22 @@
 }
 
 .connection-name {
-  display: block;
+  display: flex;
+  align-items: center;
+  gap: 6px;
   color: #f1f5f9;
   font-weight: 600;
   font-size: 14px;
+}
+
+.connection-unread-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: #4f8ef7;
+  box-shadow: 0 0 6px rgba(79, 142, 247, 0.6);
+  flex-shrink: 0;
 }
 
 .connection-username {
@@ -135,13 +160,25 @@
   gap: 8px;
 }
 
-.connected-badge {
+.connection-message-btn {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
-  color: #00e5a0;
+  gap: 6px;
+  background-color: rgba(79, 142, 247, 0.1);
+  color: #4f8ef7;
+  border: 1px solid rgba(79, 142, 247, 0.25);
+  border-radius: 8px;
+  padding: 7px 12px;
+  font-family: Inter, sans-serif;
   font-size: 13px;
   font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.15s, border-color 0.15s;
+}
+
+.connection-message-btn:hover {
+  background-color: rgba(79, 142, 247, 0.18);
+  border-color: rgba(79, 142, 247, 0.4);
 }
 
 @media (max-width: 430px) {
@@ -153,6 +190,14 @@
 
   .connections-page h1 {
     font-size: 20px;
+  }
+
+  .connections-layout {
+    flex-direction: column;
+  }
+
+  .connections-layout.with-chat .connections-main {
+    flex: 1 1 auto;
   }
 
   .connection-card {
