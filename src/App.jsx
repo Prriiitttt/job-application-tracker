@@ -64,7 +64,9 @@ function App() {
     }
     if (!data) return;
     const map = {};
-    data.forEach((r) => { map[r.other_user_id] = r.has_unread; });
+    data.forEach((r) => {
+      map[r.other_user_id] = map[r.other_user_id] || r.has_unread;
+    });
     console.log("[unread] map (json):", JSON.stringify(map));
     setUnreadMap(map);
   }, [session]);
