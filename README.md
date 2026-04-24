@@ -27,6 +27,13 @@ https://job-trackr-umber.vercel.app/
 - LinkedIn-style mutual connections — send requests, accept/decline
 - Application stats are private — only visible to the user and their connections
 
+### Messaging
+- Direct 1:1 chat with any accepted connection
+- Realtime delivery via Supabase Realtime (postgres changes + broadcast)
+- Text, emoji picker, image uploads, and Giphy GIF search
+- Typing indicator, per-message timestamps, auto mark-as-read
+- Unread indicators — green dot on the Connections nav icon and on the conversation row in the list
+
 ### Auth
 - Email/password signup and login
 - Google and GitHub OAuth
@@ -45,6 +52,8 @@ https://job-trackr-umber.vercel.app/
 - **Recharts** — charts and analytics
 - **Motion** (Framer Motion) — animations
 - **Lucide React** — icons
+- **emoji-picker-react** — emoji picker in the chat composer
+- **Giphy API** — GIF search in the chat composer
 - **Vanilla CSS** — per-component, dark theme
 
 ## Running Locally
@@ -56,13 +65,14 @@ npm install
 npm run dev
 ```
 
-Create a `.env` file with your Supabase credentials:
+Create a `.env` file with your Supabase credentials and (optionally) a Giphy key to enable the GIF picker:
 
 ```
 VITE_SUPABASE_URL=your_supabase_url
 VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
+VITE_GIPHY_API_KEY=your_giphy_api_key
 ```
 
 ## What I Learned
 
-Built this from scratch, evolving it from a localStorage-only app to a full Supabase-backed platform. Went deep on React Router nested routing, Supabase auth (OAuth + email), real-time database patterns, file storage with signed URLs, drag-and-drop (HTML5 + touch events for mobile), responsive design, and CSS Grid. First project where I built a social layer with mutual connections and privacy controls.
+Built this from scratch, evolving it from a localStorage-only app to a full Supabase-backed platform. Went deep on React Router nested routing, Supabase auth (OAuth + email), real-time database patterns, file storage with signed URLs, drag-and-drop (HTML5 + touch events for mobile), responsive design, and CSS Grid. Added a social layer with mutual connections and privacy controls, then layered realtime 1:1 messaging on top — including a from-scratch Supabase Realtime setup, RLS policies that avoid the classic recursion trap via a `SECURITY DEFINER` membership helper, unread state synced across tabs, and a masonry Giphy picker.
