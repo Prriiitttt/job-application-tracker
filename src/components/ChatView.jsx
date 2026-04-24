@@ -414,7 +414,7 @@ export default function ChatView({ session, otherUser, onClose, onMarkedRead }) 
                   autoFocus
                 />
               </div>
-              <div className="chat-gif-grid">
+              <div className="chat-gif-results">
                 {!GIPHY_API_KEY ? (
                   <div className="chat-gif-state">Giphy API key not set</div>
                 ) : gifLoading ? (
@@ -422,16 +422,24 @@ export default function ChatView({ session, otherUser, onClose, onMarkedRead }) 
                 ) : gifs.length === 0 ? (
                   <div className="chat-gif-state">No GIFs found</div>
                 ) : (
-                  gifs.map((g) => (
-                    <button
-                      key={g.id}
-                      type="button"
-                      className="chat-gif-item"
-                      onClick={() => handleSelectGif(g)}
-                    >
-                      <img src={g.images?.fixed_height_small?.url} alt={g.title || "GIF"} />
-                    </button>
-                  ))
+                  <div className="chat-gif-grid">
+                    {gifs.map((g) => {
+                      const src =
+                        g.images?.fixed_width_downsampled?.url ||
+                        g.images?.fixed_width_small?.url ||
+                        g.images?.fixed_width?.url;
+                      return (
+                        <button
+                          key={g.id}
+                          type="button"
+                          className="chat-gif-item"
+                          onClick={() => handleSelectGif(g)}
+                        >
+                          <img src={src} alt={g.title || "GIF"} loading="lazy" />
+                        </button>
+                      );
+                    })}
+                  </div>
                 )}
               </div>
             </div>

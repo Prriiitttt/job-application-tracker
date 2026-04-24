@@ -238,24 +238,30 @@
 
 .chat-gif-search input:focus { border-color: rgba(79, 142, 247, 0.5); }
 
-.chat-gif-grid {
+.chat-gif-results {
   flex: 1;
   overflow-y: auto;
   padding: 8px;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 6px;
-  align-content: start;
+  display: flex;
+  flex-direction: column;
+}
+
+.chat-gif-grid {
+  column-count: 2;
+  column-gap: 6px;
 }
 
 .chat-gif-item {
+  display: block;
+  width: 100%;
+  margin: 0 0 6px 0;
+  padding: 0;
   background: transparent;
   border: none;
-  padding: 0;
-  cursor: pointer;
   border-radius: 8px;
   overflow: hidden;
-  aspect-ratio: 1 / 1;
+  cursor: pointer;
+  break-inside: avoid;
   transition: opacity 0.15s;
 }
 
@@ -263,13 +269,11 @@
 
 .chat-gif-item img {
   width: 100%;
-  height: 100%;
-  object-fit: cover;
+  height: auto;
   display: block;
 }
 
 .chat-gif-state {
-  grid-column: 1 / -1;
   margin: auto;
   color: #64748b;
   font-size: 13px;
