@@ -163,16 +163,20 @@
   background: transparent !important;
   border: none !important;
   padding: 0;
+  width: fit-content;
   max-width: 280px;
   gap: 4px;
 }
 
 .chat-image {
-  width: 100%;
+  max-width: 280px;
   max-height: 280px;
+  width: auto;
+  height: auto;
   border-radius: 14px;
   display: block;
-  object-fit: cover;
+  object-fit: contain;
+  background-color: #1e2740;
 }
 
 .chat-bubble-row.mine .chat-image { border-bottom-right-radius: 4px; }
@@ -344,6 +348,8 @@
   }
   .chat-back-btn { display: inline-flex; }
   .chat-close-btn { display: none; }
+  .chat-bubble.chat-bubble-media { max-width: min(280px, 75vw); }
+  .chat-image { max-width: min(280px, 75vw); max-height: min(280px, 60vh); }
   .chat-emoji-popover {
     left: -6px;
   }

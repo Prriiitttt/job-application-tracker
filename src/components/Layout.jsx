@@ -4,7 +4,7 @@ import { Outlet } from "react-router-dom";
 import { NavLink } from "react-router-dom";
 import { House, ListFilterPlus, ChartPie, Rocket, LogOut, Compass, Users } from "lucide-react";
 
-export default function Layout({ session, onSignOut }) {
+export default function Layout({ session, onSignOut, hasUnreadMessages }) {
   return (
     <div className="layout">
       <div className="mobile-header">
@@ -44,9 +44,14 @@ export default function Layout({ session, onSignOut }) {
           </NavLink>
           <NavLink
             to="/connections"
-            className={({ isActive }) => (isActive ? "is-active" : "")}
+            className={({ isActive }) =>
+              `connections-nav-link ${isActive ? "is-active" : ""}`
+            }
           >
             <Users size={28} />
+            {hasUnreadMessages && (
+              <span className="nav-unread-dot" aria-label="Unread messages" />
+            )}
           </NavLink>
           <button className="logout-btn" onClick={onSignOut}>
             <LogOut size={28} />

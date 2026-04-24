@@ -18,6 +18,7 @@ function App() {
   const [loading, setLoading] = useState(true);
   const [signingOut, setSigningOut] = useState(false);
   const [applications, setApplications] = useState([]);
+  const [unreadMap, setUnreadMap] = useState({});
 
   const handleSignOut = useCallback(async () => {
     setSigningOut(true);
@@ -52,6 +53,41 @@ function App() {
         if (data) setApplications(data);
       });
   }, [session]);
+
+  const loadUnread = useCallback(async () => {
+    if (!session) return;
+    const { data, error } = await supabase.rpc("get_unread_conversations");
+    if (error) {
+      console.warn("Could not load unread state:", error.message);
+      return;
+    }
+    if (!data) return;
+    const map = {};
+    data.forEach((r) => { map[r.other_user_id] = r.has_unread; });
+    setUnreadMap(map);
+  }, [session]);
+
+  const markUnreadRead = useCallback((userId) => {
+    setUnreadMap((prev) => ({ ...prev, [userId]: false }));
+  }, []);
+
+  useEffect(() => {
+    if (!session) return;
+    loadUnread();
+    const channel = supabase
+      .channel(`user-messages:${session.user.id}`)
+      .on(
+        "postgres_changes",
+        { event: "INSERT", schema: "public", table: "messages" },
+        (payload) => {
+          if (payload.new.sender_id !== session.user.id) loadUnread();
+        }
+      )
+      .subscribe();
+    return () => { supabase.removeChannel(channel); };
+  }, [session, loadUnread]);
+
+  const hasUnreadMessages = Object.values(unreadMap).some(Boolean);
 
   const addApplication = useCallback(
     async (app) => {
@@ -100,7 +136,13 @@ function App() {
       createBrowserRouter([
         {
           path: "/",
-          element: <Layout session={session} onSignOut={handleSignOut} />,
+          element: (
+            <Layout
+              session={session}
+              onSignOut={handleSignOut}
+              hasUnreadMessages={hasUnreadMessages}
+            />
+          ),
           errorElement: <Error />,
           children: [
             {
@@ -142,7 +184,13 @@ function App() {
             },
             {
               path: "connections",
-              element: <Connections session={session} />,
+              element: (
+                <Connections
+                  session={session}
+                  unreadMap={unreadMap}
+                  onMarkedRead={markUnreadRead}
+                />
+              ),
             },
           ],
         },
@@ -154,6 +202,9 @@ function App() {
       updateApplication,
       deleteApplication,
       handleSignOut,
+      unreadMap,
+      hasUnreadMessages,
+      markUnreadRead,
     ],
   );
 

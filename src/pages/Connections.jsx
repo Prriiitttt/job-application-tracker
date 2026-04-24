@@ -6,35 +6,17 @@ import { supabase } from "../lib/supabase";
 import ChatView from "../components/ChatView";
 import "./Connections.css";
 
-export default function Connections({ session }) {
+export default function Connections({ session, unreadMap, onMarkedRead }) {
   const navigate = useNavigate();
   const location = useLocation();
   const [accepted, setAccepted] = useState([]);
   const [loading, setLoading] = useState(true);
   const [activeChatUser, setActiveChatUser] = useState(null);
-  const [unreadMap, setUnreadMap] = useState({});
   const didProcessOpenChatRef = useRef(false);
 
   useEffect(() => {
     loadConnections();
-    loadUnread();
   }, [session]);
-
-  useEffect(() => {
-    const channel = supabase
-      .channel(`user-messages:${session.user.id}`)
-      .on(
-        "postgres_changes",
-        { event: "INSERT", schema: "public", table: "messages" },
-        (payload) => {
-          if (payload.new.sender_id !== session.user.id) {
-            loadUnread();
-          }
-        }
-      )
-      .subscribe();
-    return () => { supabase.removeChannel(channel); };
-  }, [session.user.id]);
 
   useEffect(() => {
     if (didProcessOpenChatRef.current) return;
@@ -49,22 +31,6 @@ export default function Connections({ session }) {
       didProcessOpenChatRef.current = true;
     }
   }, [loading, accepted, location.state, session.user.id]);
-
-  async function loadUnread() {
-    const { data, error } = await supabase.rpc("get_unread_conversations");
-    if (error) {
-      console.warn("Could not load unread state:", error.message);
-      return;
-    }
-    if (!data) return;
-    const map = {};
-    data.forEach((r) => { map[r.other_user_id] = r.has_unread; });
-    setUnreadMap(map);
-  }
-
-  function handleMarkedRead(userId) {
-    setUnreadMap((prev) => ({ ...prev, [userId]: false }));
-  }
 
   async function loadConnections() {
     setLoading(true);
@@ -136,10 +102,11 @@ export default function Connections({ session }) {
                 const other = getOtherUser(conn);
                 if (!other) return null;
                 const isActive = activeChatUser?.id === other.id;
+                const hasUnread = !!unreadMap?.[other.id];
                 return (
                   <div
                     key={conn.id}
-                    className={`connection-card ${isActive ? "is-active" : ""}`}
+                    className={`connection-card ${isActive ? "is-active" : ""} ${hasUnread ? "has-unread" : ""}`}
                   >
                     <div
                       className="connection-card-info clickable"
@@ -155,7 +122,7 @@ export default function Connections({ session }) {
                       <div>
                         <span className="connection-name">
                           {other.full_name || other.username}
-                          {unreadMap[other.id] && (
+                          {hasUnread && (
                             <span className="connection-unread-dot" aria-label="Unread messages" />
                           )}
                         </span>
@@ -186,7 +153,7 @@ export default function Connections({ session }) {
               session={session}
               otherUser={activeChatUser}
               onClose={() => setActiveChatUser(null)}
-              onMarkedRead={handleMarkedRead}
+              onMarkedRead={onMarkedRead}
             />
           )}
         </AnimatePresence>
