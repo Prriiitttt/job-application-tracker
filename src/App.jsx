@@ -57,7 +57,7 @@ function App() {
   const loadUnread = useCallback(async () => {
     if (!session) return;
     const { data, error } = await supabase.rpc("get_unread_conversations");
-    console.log("[unread] rpc result:", { data, error });
+    console.log("[unread] rpc data (json):", JSON.stringify(data), "err:", error);
     if (error) {
       console.warn("Could not load unread state:", error.message);
       return;
@@ -65,7 +65,7 @@ function App() {
     if (!data) return;
     const map = {};
     data.forEach((r) => { map[r.other_user_id] = r.has_unread; });
-    console.log("[unread] computed map:", map);
+    console.log("[unread] map (json):", JSON.stringify(map));
     setUnreadMap(map);
   }, [session]);
 
@@ -82,7 +82,12 @@ function App() {
         "postgres_changes",
         { event: "INSERT", schema: "public", table: "messages" },
         (payload) => {
-          console.log("[unread] realtime INSERT payload:", payload);
+          console.log(
+            "[unread] realtime INSERT — sender:", payload.new.sender_id,
+            "me:", session.user.id,
+            "conv:", payload.new.conversation_id,
+            "matched(not me)?", payload.new.sender_id !== session.user.id
+          );
           if (payload.new.sender_id !== session.user.id) loadUnread();
         }
       )
