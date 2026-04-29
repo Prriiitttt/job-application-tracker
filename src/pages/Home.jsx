@@ -1,17 +1,10 @@
 import React from "react";
 import "./Home.css";
 import { motion } from "framer-motion";
+import { countByStatus } from "../lib/applications";
 
 export default function Home({ applications }) {
-  const appliedApplication = applications.filter(
-    (application) => application.status === "applied",
-  );
-  const rejectedApplication = applications.filter(
-    (application) => application.status === "rejected",
-  );
-  const interviewApplication = applications.filter(
-    (application) => application.status === "interview",
-  );
+  const counts = countByStatus(applications);
 
   return (
     <motion.div
@@ -25,19 +18,19 @@ export default function Home({ applications }) {
         <div className="tiles">
           <div className="tile total-Applications">
             <h2>Total Applications</h2>
-            <p className="tile-count">{applications.length}</p>
+            <p className="tile-count">{counts.total}</p>
           </div>
           <div className="tile applied">
             <h3>Applied</h3>
-            <p className="tile-count">{appliedApplication.length}</p>
+            <p className="tile-count">{counts.applied}</p>
           </div>
           <div className="tile interviews">
             <h3>Interviews</h3>
-            <p className="tile-count">{interviewApplication.length}</p>
+            <p className="tile-count">{counts.interview}</p>
           </div>
           <div className="tile rejected">
             <h3>Rejected</h3>
-            <p className="tile-count">{rejectedApplication.length}</p>
+            <p className="tile-count">{counts.rejected}</p>
           </div>
         </div>
       </div>

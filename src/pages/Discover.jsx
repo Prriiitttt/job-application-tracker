@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Search, UserPlus, Check, Clock, Loader2, User } from "lucide-react";
 import { supabase } from "../lib/supabase";
+import { findConnection, filterDiscoverUsers } from "../lib/connections";
 import "./Discover.css";
 
 export default function Discover({ session }) {
@@ -37,12 +38,7 @@ export default function Discover({ session }) {
   }
 
   function getConnectionStatus(userId) {
-    const conn = connections.find(
-      (c) =>
-        (c.requester_id === session.user.id && c.receiver_id === userId) ||
-        (c.requester_id === userId && c.receiver_id === session.user.id)
-    );
-    return conn;
+    return findConnection(connections, session.user.id, userId);
   }
 
   async function handleConnect(userId) {
@@ -68,18 +64,7 @@ export default function Discover({ session }) {
     setActionLoading(null);
   }
 
-  const filteredUsers = users.filter((u) => {
-    // Hide users who are already connected
-    const conn = getConnectionStatus(u.id);
-    if (conn && conn.status === "accepted") return false;
-
-    if (!query) return true;
-    const q = query.toLowerCase();
-    return (
-      (u.username && u.username.toLowerCase().includes(q)) ||
-      (u.full_name && u.full_name.toLowerCase().includes(q))
-    );
-  });
+  const filteredUsers = filterDiscoverUsers(users, connections, session.user.id, query);
 
   return (
     <motion.div

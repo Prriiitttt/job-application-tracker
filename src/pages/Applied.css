@@ -515,6 +515,29 @@ tbody tr:hover .delete-btn {
   background: rgba(79, 142, 247, 0.1);
 }
 
+.resume-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.remove-resume-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: 1px solid rgba(255, 107, 107, 0.3);
+  border-radius: 6px;
+  color: #ff6b6b;
+  padding: 4px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.remove-resume-btn:hover {
+  background: rgba(255, 107, 107, 0.1);
+}
+
 .kanban-resume-btn {
   display: inline-flex;
   align-items: center;

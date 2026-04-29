@@ -4,12 +4,12 @@ import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft, X, User, Send, Smile, Image as ImageIcon, Paperclip, Loader2 } from "lucide-react";
 import { supabase } from "../lib/supabase";
+import { sanitizeFilename, formatMessageTime } from "../lib/messaging";
+import { isImageFile } from "../lib/validation";
+import AttachmentImage from "./AttachmentImage";
+import GifPicker from "./GifPicker";
+import MessageBubble from "./MessageBubble";
 import "./ChatView.css";
-
-const GIPHY_API_KEY = import.meta.env.VITE_GIPHY_API_KEY;
-if (!GIPHY_API_KEY) {
-  console.warn("VITE_GIPHY_API_KEY is not set — GIF picker will be disabled.");
-}
 
 export default function ChatView({ session, otherUser, onClose, onMarkedRead }) {
   const navigate = useNavigate();
@@ -22,9 +22,6 @@ export default function ChatView({ session, otherUser, onClose, onMarkedRead }) 
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [showGifPicker, setShowGifPicker] = useState(false);
-  const [gifQuery, setGifQuery] = useState("");
-  const [gifs, setGifs] = useState([]);
-  const [gifLoading, setGifLoading] = useState(false);
   const [otherTyping, setOtherTyping] = useState(false);
   const messagesEndRef = useRef(null);
   const messagesContainerRef = useRef(null);
@@ -176,30 +173,6 @@ export default function ChatView({ session, otherUser, onClose, onMarkedRead }) 
     return () => document.removeEventListener("mousedown", onDocMouseDown);
   }, [showGifPicker]);
 
-  useEffect(() => {
-    if (!showGifPicker || !GIPHY_API_KEY) return;
-    let cancelled = false;
-    const timer = setTimeout(async () => {
-      setGifLoading(true);
-      const q = gifQuery.trim();
-      const endpoint = q
-        ? `https://api.giphy.com/v1/gifs/search?api_key=${GIPHY_API_KEY}&q=${encodeURIComponent(q)}&limit=24&rating=pg-13`
-        : `https://api.giphy.com/v1/gifs/trending?api_key=${GIPHY_API_KEY}&limit=24&rating=pg-13`;
-      try {
-        const res = await fetch(endpoint);
-        const json = await res.json();
-        if (!cancelled) setGifs(json.data || []);
-      } catch {
-        if (!cancelled) setGifs([]);
-      }
-      if (!cancelled) setGifLoading(false);
-    }, 300);
-    return () => {
-      cancelled = true;
-      clearTimeout(timer);
-    };
-  }, [showGifPicker, gifQuery]);
-
   async function handleSelectGif(gif) {
     if (!conversationId) return;
     setShowGifPicker(false);
@@ -257,9 +230,9 @@ export default function ChatView({ session, otherUser, onClose, onMarkedRead }) 
     const file = e.target.files?.[0];
     e.target.value = "";
     if (!file || !conversationId || uploading) return;
-    if (!file.type.startsWith("image/")) return;
+    if (!isImageFile(file)) return;
     setUploading(true);
-    const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, "_");
+    const safeName = sanitizeFilename(file.name);
     const path = `${session.user.id}/${crypto.randomUUID()}-${safeName}`;
     const { error: uploadErr } = await supabase.storage
       .from("chat-attachments")
@@ -331,24 +304,13 @@ export default function ChatView({ session, otherUser, onClose, onMarkedRead }) 
         ) : messages.length === 0 ? (
           <div className="chat-empty">No messages yet — start the conversation</div>
         ) : (
-          messages.map((m) => {
-            const mine = m.sender_id === session.user.id;
-            const isMedia = m.message_type === "image" || m.message_type === "gif";
-            return (
-              <div key={m.id} className={`chat-bubble-row ${mine ? "mine" : "theirs"}`}>
-                <div className={`chat-bubble ${isMedia ? "chat-bubble-media" : ""}`}>
-                  {m.message_type === "image" ? (
-                    <AttachmentImage path={m.attachment_url} />
-                  ) : m.message_type === "gif" ? (
-                    <img src={m.attachment_url} alt="GIF" className="chat-image" />
-                  ) : (
-                    <div className="chat-bubble-content">{m.content}</div>
-                  )}
-                  <div className="chat-bubble-time">{formatTime(m.created_at)}</div>
-                </div>
-              </div>
-            );
-          })
+          messages.map((m) => (
+            <MessageBubble
+              key={m.id}
+              message={m}
+              mine={m.sender_id === session.user.id}
+            />
+          ))
         )}
         <div ref={messagesEndRef} />
       </div>
@@ -404,46 +366,7 @@ export default function ChatView({ session, otherUser, onClose, onMarkedRead }) 
           >
             <Paperclip size={18} />
           </button>
-          {showGifPicker && (
-            <div className="chat-gif-popover">
-              <div className="chat-gif-search">
-                <input
-                  placeholder="Search GIFs"
-                  value={gifQuery}
-                  onChange={(e) => setGifQuery(e.target.value)}
-                  autoFocus
-                />
-              </div>
-              <div className="chat-gif-results">
-                {!GIPHY_API_KEY ? (
-                  <div className="chat-gif-state">Giphy API key not set</div>
-                ) : gifLoading ? (
-                  <div className="chat-gif-state"><Loader2 size={18} className="spin" /></div>
-                ) : gifs.length === 0 ? (
-                  <div className="chat-gif-state">No GIFs found</div>
-                ) : (
-                  <div className="chat-gif-grid">
-                    {gifs.map((g) => {
-                      const src =
-                        g.images?.fixed_width_downsampled?.url ||
-                        g.images?.fixed_width_small?.url ||
-                        g.images?.fixed_width?.url;
-                      return (
-                        <button
-                          key={g.id}
-                          type="button"
-                          className="chat-gif-item"
-                          onClick={() => handleSelectGif(g)}
-                        >
-                          <img src={src} alt={g.title || "GIF"} loading="lazy" />
-                        </button>
-                      );
-                    })}
-                  </div>
-                )}
-              </div>
-            </div>
-          )}
+          {showGifPicker && <GifPicker onSelect={handleSelectGif} />}
         </div>
         <input
           ref={inputRef}
@@ -469,28 +392,3 @@ export default function ChatView({ session, otherUser, onClose, onMarkedRead }) 
   );
 }
 
-function formatTime(iso) {
-  const d = new Date(iso);
-  const now = new Date();
-  const sameDay = d.toDateString() === now.toDateString();
-  if (sameDay) {
-    return d.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
-  }
-  return d.toLocaleString([], { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" });
-}
-
-function AttachmentImage({ path }) {
-  const [url, setUrl] = useState(null);
-  useEffect(() => {
-    let cancelled = false;
-    supabase.storage
-      .from("chat-attachments")
-      .createSignedUrl(path, 3600)
-      .then(({ data }) => { if (!cancelled && data) setUrl(data.signedUrl); });
-    return () => { cancelled = true; };
-  }, [path]);
-  if (!url) {
-    return <div className="chat-image-loading"><Loader2 size={18} className="spin" /></div>;
-  }
-  return <img src={url} alt="" className="chat-image" />;
-}

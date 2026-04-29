@@ -4,6 +4,11 @@ import { useState, useRef, useCallback, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ClipboardList, Search, Download, List, LayoutGrid, Plus, FileText, Upload, X, Loader2 } from "lucide-react";
 import { supabase } from "../lib/supabase";
+import { applicationsToCSV } from "../lib/csv";
+import { filterApplications, getStatusStyle } from "../lib/applications";
+import { validateApplicationForm, validateResumeFile, todayIsoDate } from "../lib/validation";
+import { getStoredViewMode, setStoredViewMode } from "../lib/storage";
+import KanbanCard from "../components/KanbanCard";
 
 export default function Applied({
   applications,
@@ -24,9 +29,7 @@ export default function Applied({
   const [statusOpen, setStatusOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [filterStatus, setFilterStatus] = useState("all");
-  const [viewMode, setViewMode] = useState(() => {
-    return localStorage.getItem("appliedViewMode") || "list";
-  });
+  const [viewMode, setViewMode] = useState(() => getStoredViewMode());
   const [resumeFile, setResumeFile] = useState(null);
   const [uploading, setUploading] = useState(false);
   const fileInputRef = useRef(null);
@@ -35,13 +38,9 @@ export default function Applied({
   const touchState = useRef({ id: null, clone: null, originColumn: null });
   const columnRefs = useRef({});
 
-  const filteredApplications = applications.filter((app) => {
-    const matchesStatus =
-      filterStatus === "all" || app.status === filterStatus;
-    const matchesSearch =
-      app.company.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      app.role.toLowerCase().includes(searchQuery.toLowerCase());
-    return matchesStatus && matchesSearch;
+  const filteredApplications = filterApplications(applications, {
+    status: filterStatus,
+    search: searchQuery,
   });
 
   const statusOptions = [
@@ -51,7 +50,7 @@ export default function Applied({
 
   function handleViewModeChange(mode) {
     setViewMode(mode);
-    localStorage.setItem("appliedViewMode", mode);
+    setStoredViewMode(mode);
   }
 
   function handleAddBtn() {
@@ -73,13 +72,7 @@ export default function Applied({
   }
 
   function validateForm() {
-    const newErrors = {};
-    if (!formData.company) newErrors.company = "Company is required";
-    if (!formData.role) newErrors.role = "Role is required";
-    if (!formData.data) newErrors.data = "Date is required";
-    else if (formData.data > new Date().toISOString().split("T")[0])
-      newErrors.data = "Date cannot be in the future";
-    return newErrors;
+    return validateApplicationForm(formData);
   }
 
   async function handleSubmit(e) {
@@ -121,8 +114,9 @@ export default function Applied({
   function handleResumeChange(e) {
     const file = e.target.files[0];
     if (!file) return;
-    if (file.size > 5 * 1024 * 1024) {
-      setErrors((prev) => ({ ...prev, resume: "File must be under 5MB" }));
+    const result = validateResumeFile(file);
+    if (!result.ok) {
+      setErrors((prev) => ({ ...prev, resume: result.error }));
       e.target.value = "";
       return;
     }
@@ -133,14 +127,14 @@ export default function Applied({
     setResumeFile(file);
   }
 
-  async function handleViewResume(resumeUrl) {
+  const handleViewResume = useCallback(async (resumeUrl) => {
     const { data, error } = await supabase.storage
       .from("resumes")
       .createSignedUrl(resumeUrl, 60);
     if (!error && data?.signedUrl) {
       window.open(data.signedUrl, "_blank");
     }
-  }
+  }, []);
 
   async function handleRemoveResume(id, resumeUrl) {
     await supabase.storage.from("resumes").remove([resumeUrl]);
@@ -149,15 +143,6 @@ export default function Applied({
 
   function handleStatusChange(id, newStatus) {
     updateApplication(id, { status: newStatus });
-  }
-
-  function getStatusStyle(status) {
-    if (status === "applied")
-      return { background: "rgba(79,142,247,0.15)", color: "#4f8ef7" };
-    if (status === "interview")
-      return { background: "rgba(0,229,160,0.15)", color: "#00e5a0" };
-    if (status === "rejected")
-      return { background: "rgba(255,107,107,0.15)", color: "#ff6b6b" };
   }
 
   function handleDelete(id) {
@@ -170,10 +155,10 @@ export default function Applied({
     { status: "rejected", label: "Rejected", color: "#ff6b6b" },
   ];
 
-  function handleDragStart(e, id) {
+  const handleDragStart = useCallback((e, id) => {
     setDraggedId(id);
     e.dataTransfer.effectAllowed = "move";
-  }
+  }, []);
 
   function handleDragOver(e, status) {
     e.preventDefault();
@@ -194,6 +179,7 @@ export default function Applied({
     }
   }
 
+  /* v8 ignore start -- @preserve : touch DnD covered by Playwright (e2e/kanban-touch.spec.js) */
   const handleTouchStart = useCallback((e, id) => {
     const card = e.currentTarget;
     const touch = e.touches[0];
@@ -256,21 +242,10 @@ export default function Applied({
       document.removeEventListener("touchend", handleTouchEnd);
     };
   }, [draggedId, handleTouchMove, handleTouchEnd]);
+  /* v8 ignore stop */
 
   function exportToCSV() {
-    const headers = ["Company", "Role", "Date", "Status", "Notes"];
-    const rows = applications.map((app) => [
-      app.company,
-      app.role,
-      app.data,
-      app.status,
-      app.notes || "",
-    ]);
-    const csvContent = [headers, ...rows]
-      .map((row) =>
-        row.map((cell) => `"${String(cell).replace(/"/g, '""')}"`).join(","),
-      )
-      .join("\n");
+    const csvContent = applicationsToCSV(filteredApplications);
     const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
@@ -293,6 +268,7 @@ export default function Applied({
           {applications.length > 0 && (
             <div className="header-controls">
               <select
+                aria-label="Filter applications by status"
                 className="filter-select"
                 value={filterStatus}
                 onChange={(e) => setFilterStatus(e.target.value)}
@@ -304,12 +280,16 @@ export default function Applied({
               </select>
               <div className="view-toggle">
                 <button
+                  aria-label="List view"
+                  aria-pressed={viewMode === "list"}
                   className={`view-toggle-btn ${viewMode === "list" ? "active" : ""}`}
                   onClick={() => handleViewModeChange("list")}
                 >
                   <List size={18} />
                 </button>
                 <button
+                  aria-label="Kanban view"
+                  aria-pressed={viewMode === "kanban"}
                   className={`view-toggle-btn ${viewMode === "kanban" ? "active" : ""}`}
                   onClick={() => handleViewModeChange("kanban")}
                 >
@@ -414,7 +394,7 @@ export default function Applied({
                       id="data"
                       name="data"
                       value={formData.data}
-                      max={new Date().toISOString().split("T")[0]}
+                      max={todayIsoDate()}
                       onChange={(e) =>
                         setFormData({ ...formData, data: e.target.value })
                       }
@@ -545,7 +525,9 @@ export default function Applied({
                   <th>Status</th>
                   <th>Notes</th>
                   <th>Resume</th>
-                  <th></th>
+                  <th>
+                    <span className="visually-hidden">Actions</span>
+                  </th>
                 </tr>
               </thead>
               <tbody>
@@ -558,6 +540,7 @@ export default function Applied({
                       <select
                         name="status"
                         id={`status-${application.id}`}
+                        aria-label={`Status for ${application.company} ${application.role}`}
                         value={application.status}
                         style={getStatusStyle(application.status)}
                         onChange={(e) =>
@@ -572,20 +555,32 @@ export default function Applied({
                     <td data-label="Notes">{application.notes}</td>
                     <td data-label="Resume">
                       {application.resume_url && (
-                        <button
-                          className="view-resume-btn"
-                          onClick={() =>
-                            handleViewResume(application.resume_url)
-                          }
-                        >
-                          <FileText size={14} />
-                          <span>View</span>
-                        </button>
+                        <div className="resume-actions">
+                          <button
+                            className="view-resume-btn"
+                            onClick={() =>
+                              handleViewResume(application.resume_url)
+                            }
+                          >
+                            <FileText size={14} />
+                            <span>View</span>
+                          </button>
+                          <button
+                            className="remove-resume-btn"
+                            aria-label="Remove resume"
+                            onClick={() =>
+                              handleRemoveResume(application.id, application.resume_url)
+                            }
+                          >
+                            <X size={14} />
+                          </button>
+                        </div>
                       )}
                     </td>
                     <td data-label="">
                       <button
                         className="delete-btn"
+                        aria-label="Delete application"
                         onClick={() => handleDelete(application.id)}
                       >
                         {"\uD83D\uDDD1\uFE0F"}
@@ -635,34 +630,13 @@ export default function Applied({
                   </div>
                   <div className="kanban-cards">
                     {columnApps.map((app) => (
-                      <motion.div
+                      <KanbanCard
                         key={app.id}
-                        className="kanban-card"
-                        draggable
-                        onDragStart={(e) => handleDragStart(e, app.id)}
-                        onTouchStart={(e) => handleTouchStart(e, app.id)}
-                        initial={{ opacity: 0, y: 8 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.2 }}
-                      >
-                        <span className="kanban-card-company">
-                          {app.company}
-                        </span>
-                        <span className="kanban-card-role">{app.role}</span>
-                        <span className="kanban-card-date">{app.data}</span>
-                        {app.resume_url && (
-                          <button
-                            className="kanban-resume-btn"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleViewResume(app.resume_url);
-                            }}
-                          >
-                            <FileText size={12} />
-                            <span>Resume</span>
-                          </button>
-                        )}
-                      </motion.div>
+                        app={app}
+                        onDragStart={handleDragStart}
+                        onTouchStart={handleTouchStart}
+                        onViewResume={handleViewResume}
+                      />
                     ))}
                   </div>
                 </div>

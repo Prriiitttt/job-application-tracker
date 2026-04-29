@@ -18,9 +18,28 @@ npm run dev      # Vite dev server (localhost:5173, network-accessible)
 npm run build    # Production build to dist/
 npm run preview  # Preview production build locally
 npm run lint     # ESLint (flat config, v9)
+npm run test            # Vitest in watch mode
+npm run test:ui         # Vitest UI dashboard
+npm run test:coverage   # One-shot run with v8 coverage
+npm run test:e2e        # Playwright (auto-starts dev server)
 ```
 
-No test runner is configured.
+## Testing
+
+**Stack:**
+- **Vitest** + **jsdom** for unit and component tests (config in `vite.config.js` under `test`)
+- **@testing-library/react** + **@testing-library/jest-dom** + **@testing-library/user-event** for component DOM assertions
+- **MSW (Mock Service Worker)** for mocking Supabase REST/auth/storage, Giphy, and Claude API calls — handlers in `src/test/mocks/handlers.js`, Node server wired into `src/test/setup.js`
+- **Playwright** (Chromium only, locally) for E2E
+
+**Conventions:**
+- Co-locate component/page tests next to the file: `Foo.jsx` → `Foo.test.jsx`
+- Shared setup, mocks, and fixtures live in `src/test/`
+- E2E specs live in `e2e/` at the project root; Vitest excludes this directory
+- Test env vars (`VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY`, `VITE_GIPHY_API_KEY`) are pinned in `vite.config.js` under `test.env` — keeps tests deterministic and points the Supabase client at `https://test.supabase.co` so MSW can intercept it
+- MSW handlers reset between tests; override per-test with `server.use(...)` for scenario-specific responses
+- `unhandledRequest: 'warn'` so unintended network calls surface as warnings, not silent passes
+- Playwright auto-starts `npm run dev` via `webServer` and reuses it if already running
 
 ## Architecture
 

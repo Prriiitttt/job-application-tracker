@@ -10,7 +10,7 @@ export default function Layout({ session, onSignOut, hasUnreadMessages }) {
       <div className="mobile-header">
         <Rocket size={44} color="#4f8ef7" />
         <span>JobTrackr</span>
-        <button className="mobile-logout-btn" onClick={onSignOut}>
+        <button className="mobile-logout-btn" aria-label="Log out" onClick={onSignOut}>
           <LogOut size={20} />
         </button>
       </div>
@@ -18,6 +18,7 @@ export default function Layout({ session, onSignOut, hasUnreadMessages }) {
         <nav>
           <Rocket size={32} color="#4f8ef7" />
           <NavLink
+            aria-label="Home"
             className={({ isActive }) => (isActive ? "is-active" : "")}
             end
             to="/"
@@ -25,24 +26,28 @@ export default function Layout({ session, onSignOut, hasUnreadMessages }) {
             <House size={28} />
           </NavLink>
           <NavLink
+            aria-label="Applications"
             to="/applied"
             className={({ isActive }) => (isActive ? "is-active" : "")}
           >
             <ListFilterPlus size={28} />
           </NavLink>
           <NavLink
+            aria-label="Analytics"
             to="/analytics"
             className={({ isActive }) => (isActive ? "is-active" : "")}
           >
             <ChartPie size={28} />
           </NavLink>
           <NavLink
+            aria-label="Discover people"
             to="/discover"
             className={({ isActive }) => (isActive ? "is-active" : "")}
           >
             <Compass size={28} />
           </NavLink>
           <NavLink
+            aria-label="Connections"
             to="/connections"
             className={({ isActive }) =>
               `connections-nav-link ${isActive ? "is-active" : ""}`
@@ -53,7 +58,7 @@ export default function Layout({ session, onSignOut, hasUnreadMessages }) {
               <span className="nav-unread-dot" aria-label="Unread messages" />
             )}
           </NavLink>
-          <button className="logout-btn" onClick={onSignOut}>
+          <button className="logout-btn" aria-label="Log out" onClick={onSignOut}>
             <LogOut size={28} />
           </button>
         </nav>

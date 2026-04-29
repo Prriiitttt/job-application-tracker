@@ -2,6 +2,12 @@ import React from "react";
 import { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import { supabase } from "../lib/supabase";
+import {
+  getStatusChartData,
+  getWeeklyData,
+  getStreak,
+  getThisWeekCount,
+} from "../lib/applications";
 import "./Analytics.css";
 import {
   BarChart,
@@ -41,73 +47,13 @@ export default function Analytics({ applications, session }) {
       .then(() => {});
   }, [weeklyGoal, session]);
 
-  function getStatusData() {
-    const applied = applications.filter(
-      (application) => application.status === "applied",
-    );
-    const rejected = applications.filter(
-      (application) => application.status === "rejected",
-    );
-    const interview = applications.filter(
-      (application) => application.status === "interview",
-    );
-    return [
-      { name: "Applied", value: applied.length, color: "#4f8ef7" },
-      { name: "Interview", value: interview.length, color: "#00e5a0" },
-      { name: "Rejected", value: rejected.length, color: "#ff6b6b" },
-    ];
-  }
-
-  function getWeeklyData() {
-    const weeks = {};
-    applications.forEach((app) => {
-      const date = new Date(app.data);
-      const dayOfWeek = date.getDay();
-      const daysToMonday = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
-      date.setDate(date.getDate() - daysToMonday);
-      const weekLabel = date.toLocaleDateString("en-US", {
-        month: "short",
-        day: "numeric",
-      });
-      weeks[weekLabel] = (weeks[weekLabel] || 0) + 1;
-    });
-
-    return Object.keys(weeks)
-      .map((week) => ({
-        week: week,
-        count: weeks[week],
-      }))
-      .slice(-6);
-  }
-
-  function getStreak() {
-    const allDates = new Set(applications.map((app) => app.data));
-    const today = new Date();
-    let streak = 0;
-
-    while (allDates.has(today.toISOString().split("T")[0])) {
-      streak++;
-      today.setDate(today.getDate() - 1);
-    }
-    return streak;
-  }
-
-  function getThisWeekCount() {
-    const date = new Date();
-    const todayString = date.toISOString().split("T")[0];
-
-    const dayOfWeek = date.getDay();
-    const daysToMonday = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
-    date.setDate(date.getDate() - daysToMonday);
-    const mondayString = date.toISOString().split("T")[0];
-    const finalCount = applications.filter(
-      (app) => app.data >= mondayString && app.data <= todayString,
-    );
-    return finalCount.length;
-  }
-
-  const count = getThisWeekCount();
-  const percentage = Math.min((count / (weeklyGoal || 1)) * 100, 100);
+  const statusData = getStatusChartData(applications);
+  const weeklyData = getWeeklyData(applications);
+  const streak = getStreak(applications);
+  const count = getThisWeekCount(applications);
+  const goalNumber = Number(weeklyGoal);
+  const hasValidGoal = Number.isFinite(goalNumber) && goalNumber > 0;
+  const percentage = hasValidGoal ? Math.min((count / goalNumber) * 100, 100) : 0;
 
   return (
     <motion.div
@@ -131,9 +77,9 @@ export default function Analytics({ applications, session }) {
       ) : (
       <div className="analytics-charts">
         <div className="chart-card">
-          <h3>Applications Per Week</h3>
+          <h2>Applications Per Week</h2>
           <ResponsiveContainer width="100%" height={230}>
-            <BarChart data={getWeeklyData()}>
+            <BarChart data={weeklyData}>
               <XAxis dataKey="week" />
               <YAxis />
               <Tooltip />
@@ -142,17 +88,17 @@ export default function Analytics({ applications, session }) {
           </ResponsiveContainer>
         </div>
         <div className="chart-card">
-          <h3>Status Breakdown</h3>
+          <h2>Status Breakdown</h2>
           <ResponsiveContainer width="100%" height={230}>
             <PieChart>
               <Pie
-                data={getStatusData()}
+                data={statusData}
                 dataKey="value"
                 cx="50%"
                 cy="50%"
                 outerRadius={100}
               >
-                {getStatusData().map((entry, index) => (
+                {statusData.map((entry, index) => (
                   <Cell key={index} fill={entry.color} />
                 ))}
               </Pie>
@@ -161,19 +107,20 @@ export default function Analytics({ applications, session }) {
           </ResponsiveContainer>
         </div>
         <div className="streak-card">
-          <h3>Application Streak</h3>
+          <h2>Application Streak</h2>
           <div className="streak-count">
-            <span>{getStreak()}</span>
+            <span>{streak}</span>
             <span>{"\uD83D\uDD25"}</span>
           </div>
           <p>day streak</p>
         </div>
         <div className="goal-tracker">
-          <h3>Weekly Goal</h3>
+          <h2>Weekly Goal</h2>
           <div className="goal-input">
             <span>Apply To</span>
             <input
               type="number"
+              aria-label="Weekly application goal"
               value={weeklyGoal}
               onChange={(e) => {
                 const raw = e.target.value;

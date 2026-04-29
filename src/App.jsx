@@ -1,17 +1,32 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import { useState, useEffect, useMemo, useCallback } from "react";
+import { useState, useEffect, useMemo, useCallback, Suspense, lazy } from "react";
 import { supabase } from "./lib/supabase";
 import "./App.css";
 import Layout from "./components/Layout";
-import Home from "./pages/Home";
-import Applied from "./pages/Applied";
-import Analytics from "./pages/Analytics";
-import Error from "./pages/Error";
-import Login from "./pages/Login";
 import Loading from "./components/Loading";
-import Profile from "./pages/Profile";
-import Discover from "./pages/Discover";
-import Connections from "./pages/Connections";
+import ErrorBoundary from "./components/ErrorBoundary";
+import { buildUnreadMap, hasAnyUnread } from "./lib/messaging";
+
+const Home = lazy(() => import("./pages/Home"));
+const Applied = lazy(() => import("./pages/Applied"));
+const Analytics = lazy(() => import("./pages/Analytics"));
+const Error = lazy(() => import("./pages/Error"));
+const Login = lazy(() => import("./pages/Login"));
+const Profile = lazy(() => import("./pages/Profile"));
+const Discover = lazy(() => import("./pages/Discover"));
+const Connections = lazy(() => import("./pages/Connections"));
+
+function RouteFallback() {
+  return <Loading message="Loading" />;
+}
+
+function lazyRoute(node, scope = "This page") {
+  return (
+    <ErrorBoundary scope={scope}>
+      <Suspense fallback={<RouteFallback />}>{node}</Suspense>
+    </ErrorBoundary>
+  );
+}
 
 function App() {
   const [session, setSession] = useState(null);
@@ -61,12 +76,7 @@ function App() {
       console.warn("Could not load unread state:", error.message);
       return;
     }
-    if (!data) return;
-    const map = {};
-    data.forEach((r) => {
-      map[r.other_user_id] = map[r.other_user_id] || r.has_unread;
-    });
-    setUnreadMap(map);
+    setUnreadMap(buildUnreadMap(data));
   }, [session]);
 
   const markUnreadRead = useCallback((userId) => {
@@ -89,7 +99,7 @@ function App() {
     return () => { supabase.removeChannel(channel); };
   }, [session, loadUnread]);
 
-  const hasUnreadMessages = Object.values(unreadMap).some(Boolean);
+  const hasUnreadMessages = hasAnyUnread(unreadMap);
 
   const addApplication = useCallback(
     async (app) => {
@@ -145,15 +155,15 @@ function App() {
               hasUnreadMessages={hasUnreadMessages}
             />
           ),
-          errorElement: <Error />,
+          errorElement: lazyRoute(<Error />),
           children: [
             {
               index: true,
-              element: <Home applications={applications} />,
+              element: lazyRoute(<Home applications={applications} />),
             },
             {
               path: "applied",
-              element: (
+              element: lazyRoute(
                 <Applied
                   applications={applications}
                   addApplication={addApplication}
@@ -165,7 +175,7 @@ function App() {
             },
             {
               path: "analytics",
-              element: (
+              element: lazyRoute(
                 <Analytics
                   applications={applications}
                   session={session}
@@ -174,19 +184,19 @@ function App() {
             },
             {
               path: "profile/me",
-              element: <Profile session={session} isOwn={true} />,
+              element: lazyRoute(<Profile session={session} isOwn={true} />),
             },
             {
               path: "profile/:username",
-              element: <Profile session={session} />,
+              element: lazyRoute(<Profile session={session} />),
             },
             {
               path: "discover",
-              element: <Discover session={session} />,
+              element: lazyRoute(<Discover session={session} />),
             },
             {
               path: "connections",
-              element: (
+              element: lazyRoute(
                 <Connections
                   session={session}
                   unreadMap={unreadMap}
@@ -212,7 +222,13 @@ function App() {
 
   if (loading) return <Loading message="Loading" />;
   if (signingOut) return <Loading message="Signing out" />;
-  if (!session) return <Login />;
+  if (!session) {
+    return (
+      <Suspense fallback={<Loading message="Loading" />}>
+        <Login />
+      </Suspense>
+    );
+  }
 
   return <RouterProvider router={router} />;
 }

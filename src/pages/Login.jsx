@@ -122,9 +122,13 @@ export default function Login() {
         </fieldset>
         <p className="toggle-auth">
           {isSignUp ? "Already have an account?" : "Don't have an account?"}{" "}
-          <span onClick={() => { setIsSignUp(!isSignUp); setError(""); }}>
+          <button
+            type="button"
+            className="toggle-auth-btn"
+            onClick={() => { setIsSignUp(!isSignUp); setError(""); }}
+          >
             {isSignUp ? "Log In" : "Sign Up"}
-          </span>
+          </button>
         </p>
       </div>
     </motion.div>
