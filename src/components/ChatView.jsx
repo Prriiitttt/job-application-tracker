@@ -2,11 +2,12 @@ import React, { useEffect, useRef, useState } from "react";
 import EmojiPicker, { Theme } from "emoji-picker-react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, X, User, Send, Smile, Image as ImageIcon, Paperclip, Loader2 } from "lucide-react";
+import { ArrowLeft, X, Send, Smile, Image as ImageIcon, Paperclip, Loader2 } from "lucide-react";
 import { supabase } from "../lib/supabase";
 import { sanitizeFilename, formatMessageTime } from "../lib/messaging";
-import { isImageFile } from "../lib/validation";
+import { validateChatImage } from "../lib/validation";
 import AttachmentImage from "./AttachmentImage";
+import Avatar from "./Avatar";
 import GifPicker from "./GifPicker";
 import MessageBubble from "./MessageBubble";
 import "./ChatView.css";
@@ -230,7 +231,7 @@ export default function ChatView({ session, otherUser, onClose, onMarkedRead }) 
     const file = e.target.files?.[0];
     e.target.value = "";
     if (!file || !conversationId || uploading) return;
-    if (!isImageFile(file)) return;
+    if (!validateChatImage(file).ok) return;
     setUploading(true);
     const safeName = sanitizeFilename(file.name);
     const path = `${session.user.id}/${crypto.randomUUID()}-${safeName}`;
@@ -276,11 +277,10 @@ export default function ChatView({ session, otherUser, onClose, onMarkedRead }) 
           onClick={() => navigate(`/profile/${otherUser.username}`)}
         >
           <div className="chat-header-avatar">
-            {otherUser.avatar_url ? (
-              <img src={otherUser.avatar_url} alt={otherUser.full_name} />
-            ) : (
-              <User size={20} />
-            )}
+            <Avatar
+              avatarUrl={otherUser.avatar_url}
+              name={otherUser.full_name || otherUser.username}
+            />
           </div>
           <div className="chat-header-names">
             <span className="chat-header-name">{otherUser.full_name || otherUser.username}</span>

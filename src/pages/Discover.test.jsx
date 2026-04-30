@@ -72,6 +72,13 @@ describe("Discover page", () => {
     expect(screen.queryByText("Bob Smith")).not.toBeInTheDocument();
   });
 
+  it("renders Connect buttons with the styled .connect-btn class", async () => {
+    setupMocks();
+    renderWithRouter(<Discover session={fakeSession({ id: ME_ID })} />);
+    const btn = await screen.findAllByRole("button", { name: /^connect$/i });
+    expect(btn[0]).toHaveClass("connect-btn");
+  });
+
   it("shows a Connect button for non-connected users and sends a request on click", async () => {
     const user = userEvent.setup();
     setupMocks();

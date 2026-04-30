@@ -3,6 +3,7 @@ import { Loader2 } from "lucide-react";
 import { supabase } from "../lib/supabase";
 
 const SIGNED_URL_TTL_MS = 60 * 60 * 1000; // matches the 3600s expiry requested below
+const SIGNED_URL_REFRESH_BUFFER_MS = 5 * 60 * 1000; // refetch ~5 min before expiry
 const signedUrlCache = new Map(); // path -> { url, expiresAt }
 
 export function __resetAttachmentCache() {
@@ -45,8 +46,9 @@ export default function AttachmentImage({ path }) {
         }
         signedUrlCache.set(path, {
           url: data.signedUrl,
-          // Refresh slightly before the 1h server TTL to be safe
-          expiresAt: Date.now() + SIGNED_URL_TTL_MS - 60 * 1000,
+          // Treat as expired 5 min before the server TTL so callers refetch
+          // before the URL actually goes stale.
+          expiresAt: Date.now() + SIGNED_URL_TTL_MS - SIGNED_URL_REFRESH_BUFFER_MS,
         });
         setUrl(data.signedUrl);
       })

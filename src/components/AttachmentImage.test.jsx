@@ -67,6 +67,36 @@ describe("AttachmentImage", () => {
     expect(calls).toEqual(["me/cached.png"]);
   });
 
+  it("refetches when the cached URL is past the refresh window", async () => {
+    const calls = [];
+    vi.spyOn(supabase.storage, "from").mockImplementation(() => ({
+      createSignedUrl: (path) => {
+        calls.push(path);
+        return Promise.resolve({ data: { signedUrl: `https://signed/${path}-${calls.length}` }, error: null });
+      },
+    }));
+    // Freeze "now"
+    const start = 1_700_000_000_000;
+    vi.spyOn(Date, "now").mockReturnValue(start);
+
+    const first = render(<AttachmentImage path="me/expiring.png" />);
+    await waitFor(() => {
+      expect(first.container.querySelector("img.chat-image")).toBeInTheDocument();
+    });
+    first.unmount();
+    expect(calls).toHaveLength(1);
+
+    // Jump ahead past the refresh window — entry's expiresAt = start + 55min,
+    // so 56 minutes later the cached URL is treated as expired.
+    Date.now.mockReturnValue(start + 56 * 60 * 1000);
+
+    const second = render(<AttachmentImage path="me/expiring.png" />);
+    await waitFor(() => {
+      expect(second.container.querySelector("img.chat-image")).toBeInTheDocument();
+    });
+    expect(calls).toHaveLength(2);
+  });
+
   it("re-fetches when the path prop changes", async () => {
     const calls = [];
     vi.spyOn(supabase.storage, "from").mockImplementation(() => ({

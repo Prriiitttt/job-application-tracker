@@ -439,4 +439,49 @@ describe("Applied — CSV export", () => {
     expect(createUrlSpy).toHaveBeenCalled();
     expect(clickSpy).toHaveBeenCalled();
   });
+
+  it("exports only rows matching the active status filter and search", async () => {
+    const apps = [
+      { id: 1, company: "Acme", role: "Engineer", data: "2026-01-10", status: "applied", notes: "" },
+      { id: 2, company: "Acme", role: "Designer", data: "2026-01-11", status: "interview", notes: "" },
+      { id: 3, company: "Beta", role: "Engineer", data: "2026-01-12", status: "interview", notes: "" },
+      { id: 4, company: "Beta", role: "Manager", data: "2026-01-13", status: "rejected", notes: "" },
+    ];
+
+    // Capture what gets written into the Blob
+    let blobContent = "";
+    const RealBlob = global.Blob;
+    global.Blob = function MockBlob(parts) {
+      blobContent = parts.join("");
+      return new RealBlob(parts);
+    };
+    vi.spyOn(URL, "createObjectURL").mockReturnValue("blob:mock-url");
+    vi.spyOn(HTMLAnchorElement.prototype, "click").mockImplementation(() => {});
+
+    try {
+      const user = userEvent.setup();
+      render(
+        <Applied
+          applications={apps}
+          addApplication={vi.fn()}
+          updateApplication={vi.fn()}
+          deleteApplication={vi.fn()}
+          session={fakeSession()}
+        />
+      );
+      await user.selectOptions(screen.getAllByRole("combobox")[0], "interview");
+      await user.type(screen.getByPlaceholderText(/search by company or role/i), "acme");
+      await user.click(screen.getByRole("button", { name: /export to csv/i }));
+
+      // Only id=2 (Acme + Designer + interview) should be in the export.
+      expect(blobContent).toContain("Acme");
+      expect(blobContent).toContain("Designer");
+      expect(blobContent).not.toContain("Beta");
+      expect(blobContent).not.toContain("Manager");
+      // Acme + Engineer is "applied", filtered out by status
+      expect(blobContent.match(/"Engineer"/g) || []).toHaveLength(0);
+    } finally {
+      global.Blob = RealBlob;
+    }
+  });
 });

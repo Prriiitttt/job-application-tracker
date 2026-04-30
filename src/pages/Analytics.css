@@ -111,6 +111,13 @@
   font-size: 13px;
 }
 
+.goal-empty {
+  color: #64748b;
+  font-size: 13px;
+  font-style: italic;
+  margin-top: 8px;
+}
+
 .progress-bar {
   height: 8px;
   background: rgba(255, 255, 255, 0.08);

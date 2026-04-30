@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { User, UserPlus, Check, X, Clock, Loader2, Lock, MessageCircle } from "lucide-react";
+import { UserPlus, Check, X, Clock, Loader2, Lock, MessageCircle } from "lucide-react";
 import { supabase } from "../lib/supabase";
+import Avatar from "../components/Avatar";
 import "./Profile.css";
 
 export default function Profile({ session, isOwn }) {
@@ -204,11 +205,10 @@ export default function Profile({ session, isOwn }) {
       <div className="profile-card">
         <div className="profile-header">
           <div className="profile-avatar">
-            {profile.avatar_url ? (
-              <img src={profile.avatar_url} alt={profile.full_name} />
-            ) : (
-              <User size={40} />
-            )}
+            <Avatar
+              avatarUrl={profile.avatar_url}
+              name={profile.full_name || profile.username}
+            />
           </div>
           <div className="profile-info">
             <h1>{profile.full_name || profile.username}</h1>

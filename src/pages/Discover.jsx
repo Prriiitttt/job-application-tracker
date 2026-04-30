@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Search, UserPlus, Check, Clock, Loader2, User } from "lucide-react";
+import { Search, UserPlus, Check, Clock, Loader2 } from "lucide-react";
 import { supabase } from "../lib/supabase";
 import { findConnection, filterDiscoverUsers } from "../lib/connections";
+import Avatar from "../components/Avatar";
 import "./Discover.css";
 
 export default function Discover({ session }) {
@@ -101,11 +102,10 @@ export default function Discover({ session }) {
                   onClick={() => navigate(`/profile/${user.username}`)}
                 >
                   <div className="discover-avatar">
-                    {user.avatar_url ? (
-                      <img src={user.avatar_url} alt={user.full_name} />
-                    ) : (
-                      <User size={24} />
-                    )}
+                    <Avatar
+                      avatarUrl={user.avatar_url}
+                      name={user.full_name || user.username}
+                    />
                   </div>
                   <div>
                     <span className="discover-name">{user.full_name || user.username}</span>

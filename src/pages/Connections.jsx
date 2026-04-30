@@ -1,9 +1,10 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
-import { User, Loader2, Users, Compass, MessageCircle } from "lucide-react";
+import { Loader2, Users, Compass, MessageCircle } from "lucide-react";
 import { supabase } from "../lib/supabase";
 import ChatView from "../components/ChatView";
+import Avatar from "../components/Avatar";
 import "./Connections.css";
 
 export default function Connections({ session, unreadMap, onMarkedRead }) {
@@ -113,11 +114,10 @@ export default function Connections({ session, unreadMap, onMarkedRead }) {
                       onClick={() => navigate(`/profile/${other.username}`)}
                     >
                       <div className="connection-avatar">
-                        {other.avatar_url ? (
-                          <img src={other.avatar_url} alt={other.full_name} />
-                        ) : (
-                          <User size={24} />
-                        )}
+                        <Avatar
+                          avatarUrl={other.avatar_url}
+                          name={other.full_name || other.username}
+                        />
                       </div>
                       <div>
                         <span className="connection-name">

@@ -3,16 +3,12 @@ export const APPLICATION_STATUSES = ["applied", "interview", "rejected"];
 export function countByStatus(applications) {
   const base = { total: 0, applied: 0, interview: 0, rejected: 0 };
   if (!Array.isArray(applications)) return base;
-  return applications.reduce(
-    (acc, app) => {
-      acc.total += 1;
-      if (app && APPLICATION_STATUSES.includes(app.status)) {
-        acc[app.status] += 1;
-      }
-      return acc;
-    },
-    { ...base }
-  );
+  return applications.reduce((acc, app) => {
+    if (!app || !APPLICATION_STATUSES.includes(app.status)) return acc;
+    acc[app.status] += 1;
+    acc.total += 1;
+    return acc;
+  }, { ...base });
 }
 
 export function filterApplications(applications, { status = "all", search = "" } = {}) {

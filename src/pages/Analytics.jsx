@@ -134,21 +134,27 @@ export default function Analytics({ applications, session }) {
             />
             <span>Job this week</span>
           </div>
-          <div className="goal-progress">
-            <span>
-              {count} of {weeklyGoal} applied
-            </span>
-            <span>{Math.round(percentage)}%</span>
-          </div>
-          <div className="progress-bar">
-            <div
-              className="progress-bar-fill"
-              style={{
-                width: `${percentage}%`,
-                background: percentage >= 100 ? "#4f8ef7" : "#00e5a0",
-              }}
-            ></div>
-          </div>
+          {hasValidGoal ? (
+            <>
+              <div className="goal-progress">
+                <span>
+                  {count} of {weeklyGoal} applied
+                </span>
+                <span>{Math.round(percentage)}%</span>
+              </div>
+              <div className="progress-bar">
+                <div
+                  className="progress-bar-fill"
+                  style={{
+                    width: `${percentage}%`,
+                    background: percentage >= 100 ? "#4f8ef7" : "#00e5a0",
+                  }}
+                ></div>
+              </div>
+            </>
+          ) : (
+            <div className="goal-empty">No goal set</div>
+          )}
         </div>
       </div>
       )}

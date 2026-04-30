@@ -2,6 +2,7 @@ import { describe, it, expect } from "vitest";
 import {
   validateApplicationForm,
   validateResumeFile,
+  validateChatImage,
   isImageFile,
   todayIsoDate,
   MAX_RESUME_BYTES,
@@ -98,7 +99,7 @@ describe("validateResumeFile", () => {
   it("rejects a 0-byte file", () => {
     const result = validateResumeFile(fakeFile(0));
     expect(result.ok).toBe(false);
-    expect(result.error).toBe("File is empty");
+    expect(result.error).toBe("File appears to be empty");
   });
 
   it("accepts a file exactly at the 5MB boundary", () => {
@@ -118,6 +119,29 @@ describe("validateResumeFile", () => {
 
   it("rejects malformed input without size", () => {
     expect(validateResumeFile({ name: "x" }).ok).toBe(false);
+  });
+});
+
+describe("validateChatImage", () => {
+  it("accepts a non-empty image", () => {
+    expect(validateChatImage({ type: "image/png", size: 1024 })).toEqual({ ok: true });
+  });
+
+  it("rejects a non-image file", () => {
+    const r = validateChatImage({ type: "application/pdf", size: 100 });
+    expect(r.ok).toBe(false);
+    expect(r.error).toMatch(/image files/i);
+  });
+
+  it("rejects a 0-byte image", () => {
+    const r = validateChatImage({ type: "image/png", size: 0 });
+    expect(r.ok).toBe(false);
+    expect(r.error).toBe("File appears to be empty");
+  });
+
+  it("rejects null/undefined", () => {
+    expect(validateChatImage(null).ok).toBe(false);
+    expect(validateChatImage(undefined).ok).toBe(false);
   });
 });
 

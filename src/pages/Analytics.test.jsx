@@ -66,5 +66,28 @@ describe("Analytics page", () => {
     await user.type(goalInput, "10");
     expect(goalInput).toHaveValue(10);
   });
+
+  it("shows 'No goal set' instead of 100% when goal is cleared", async () => {
+    const user = userEvent.setup();
+    render(<Analytics applications={[{ id: 1, status: "applied", data: "2026-04-20" }]} session={fakeSession()} />);
+    const goalInput = await screen.findByRole("spinbutton");
+    await user.clear(goalInput);
+    expect(screen.getByText(/no goal set/i)).toBeInTheDocument();
+    expect(screen.queryByText(/100%/)).not.toBeInTheDocument();
+  });
+
+  it("shows 'No goal set' when stored goal is 0", async () => {
+    vi.spyOn(supabase, "from").mockImplementation(() => {
+      const builder = {
+        select: () => builder,
+        eq: () => builder,
+        single: () => Promise.resolve({ data: { weekly_goal: 0 }, error: null }),
+        upsert: () => Promise.resolve({ data: null, error: null }),
+      };
+      return builder;
+    });
+    render(<Analytics applications={[{ id: 1, status: "applied", data: "2026-04-20" }]} session={fakeSession()} />);
+    expect(await screen.findByText(/no goal set/i)).toBeInTheDocument();
+  });
 });
 

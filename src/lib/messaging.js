@@ -23,6 +23,16 @@ export function formatMessageTime(iso, now = new Date()) {
   const d = new Date(iso);
   if (isNaN(d.getTime())) return "";
 
+  const diffMs = now.getTime() - d.getTime();
+  const diffMin = Math.floor(diffMs / 60000);
+
+  // Relative phrasing only for past messages within the last hour. Future
+  // timestamps and very old timestamps fall through to absolute formatting.
+  if (diffMin >= 0 && diffMin < 1) return "just now";
+  if (diffMin >= 1 && diffMin < 60) {
+    return `${diffMin} minute${diffMin === 1 ? "" : "s"} ago`;
+  }
+
   const time = d.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
   if (d.toDateString() === now.toDateString()) {
     return time;

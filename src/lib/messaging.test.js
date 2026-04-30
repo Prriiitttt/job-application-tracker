@@ -113,24 +113,65 @@ describe("sanitizeFilename", () => {
 });
 
 describe("formatMessageTime", () => {
-  // Locale-dependent assertions kept loose: we assert *shape*, not exact strings.
-  it("returns time-only format for same day", () => {
+  it("returns 'just now' for messages less than a minute old", () => {
     const now = new Date("2026-04-23T18:00:00");
-    const iso = "2026-04-23T09:30:00";
+    const iso = new Date(now.getTime() - 30 * 1000).toISOString();
+    expect(formatMessageTime(iso, now)).toBe("just now");
+  });
+
+  it("returns 'just now' for a message dated exactly now", () => {
+    const now = new Date("2026-04-23T18:00:00");
+    expect(formatMessageTime(now.toISOString(), now)).toBe("just now");
+  });
+
+  it("returns '1 minute ago' (singular) for ~1 minute old", () => {
+    const now = new Date("2026-04-23T18:00:00");
+    const iso = new Date(now.getTime() - 60 * 1000).toISOString();
+    expect(formatMessageTime(iso, now)).toBe("1 minute ago");
+  });
+
+  it("returns 'X minutes ago' (plural) for ~5 minutes old", () => {
+    const now = new Date("2026-04-23T18:00:00");
+    const iso = new Date(now.getTime() - 5 * 60 * 1000).toISOString();
+    expect(formatMessageTime(iso, now)).toBe("5 minutes ago");
+  });
+
+  it("returns 'X minutes ago' for ~59 minutes old (boundary)", () => {
+    const now = new Date("2026-04-23T18:00:00");
+    const iso = new Date(now.getTime() - 59 * 60 * 1000).toISOString();
+    expect(formatMessageTime(iso, now)).toBe("59 minutes ago");
+  });
+
+  it("falls through to absolute time when ≥ 1 hour ago, same day", () => {
+    const now = new Date("2026-04-23T18:00:00");
+    const iso = new Date(now.getTime() - 61 * 60 * 1000).toISOString();
     const out = formatMessageTime(iso, now);
-    // Should not contain a month abbreviation
-    expect(/(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)/.test(out)).toBe(false);
+    expect(out).not.toMatch(/ago|just now/);
+    expect(out).not.toMatch(/(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)/);
     expect(out.length).toBeGreaterThan(0);
   });
 
-  it("includes month/day for a different day", () => {
+  it("returns 'Yesterday HH:MM' for a message from the previous day", () => {
     const now = new Date("2026-04-23T18:00:00");
-    const iso = "2026-03-15T09:30:00";
+    const iso = new Date("2026-04-22T09:30:00").toISOString();
+    expect(formatMessageTime(iso, now)).toMatch(/^Yesterday /);
+  });
+
+  it("includes a month abbreviation for older messages", () => {
+    const now = new Date("2026-04-23T18:00:00");
+    const iso = new Date("2026-03-15T09:30:00").toISOString();
     const out = formatMessageTime(iso, now);
     expect(/(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)/.test(out)).toBe(true);
   });
 
-  it("returns empty string for null/undefined", () => {
+  it("does not apply relative phrasing to future timestamps", () => {
+    const now = new Date("2026-04-23T18:00:00");
+    const iso = new Date(now.getTime() + 5 * 60 * 1000).toISOString();
+    const out = formatMessageTime(iso, now);
+    expect(out).not.toMatch(/ago|just now/);
+  });
+
+  it("returns empty string for null/undefined/empty input", () => {
     expect(formatMessageTime(null)).toBe("");
     expect(formatMessageTime(undefined)).toBe("");
     expect(formatMessageTime("")).toBe("");

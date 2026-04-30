@@ -32,22 +32,36 @@ describe("countByStatus", () => {
     expect(countByStatus(sample)).toEqual({ total: 4, applied: 2, interview: 1, rejected: 1 });
   });
 
-  it("counts total even when status is unknown, but doesn't bucket it", () => {
+  it("ignores items with unknown statuses (does not affect total)", () => {
     expect(countByStatus([{ status: "weird" }])).toEqual({
-      total: 1,
+      total: 0,
       applied: 0,
       interview: 0,
       rejected: 0,
     });
   });
 
-  it("ignores null/undefined items in the array (counts toward total)", () => {
+  it("ignores null/undefined items entirely", () => {
     expect(countByStatus([null, undefined, { status: "applied" }])).toEqual({
-      total: 3,
+      total: 1,
       applied: 1,
       interview: 0,
       rejected: 0,
     });
+  });
+
+  it("guarantees total === applied + interview + rejected for any input", () => {
+    const inputs = [
+      [],
+      [{ status: "applied" }, { status: "interview" }, { status: "rejected" }],
+      [null, { status: "weird" }, { status: "applied" }, undefined],
+      sample,
+      [{ status: "applied" }, { status: "applied" }, { status: "garbage" }],
+    ];
+    for (const input of inputs) {
+      const c = countByStatus(input);
+      expect(c.total).toBe(c.applied + c.interview + c.rejected);
+    }
   });
 
   it("exposes the canonical status list", () => {
